@@ -1,0 +1,5 @@
+E:\Tryouts\TimeZone\TimeZone\bin\TimeZone.dll
+E:\Tryouts\TimeZone\TimeZone\bin\TimeZone.pdb
+E:\Tryouts\TimeZone\TimeZone\obj\Debug\ResolveAssemblyReference.cache
+E:\Tryouts\TimeZone\TimeZone\obj\Debug\TimeZone.dll
+E:\Tryouts\TimeZone\TimeZone\obj\Debug\TimeZone.pdb

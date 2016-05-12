@@ -1,0 +1,44 @@
+﻿@model IList<Timezone.Models.Payment>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>
+    Payment Page</h2>
+@using (Html.BeginForm("MakePayment", "Home"))
+{
+    <fieldset>
+        <legend>Make Payment</legend>
+        <p>
+            <label for="Name">
+                Name:</label>
+            @Html.TextBox("Name")
+        </p>
+        <p>
+            <label for="Amount">
+                Amount($):</label>
+            @Html.TextBox("Amount")
+        </p>
+        <p>
+            <label for="CreditCard">
+                Credit Card:</label>
+            @Html.TextBox("CreditCard")
+        </p>
+        <p>
+            <input type="submit" value="Submit" />
+        </p>
+    </fieldset>
+    <div id="payments">
+        @foreach (var payment in Model)
+        {
+            <p>
+                <span>Name: @payment.Name
+                    <br />
+                    Amount($): @payment.Amount
+                    <br />
+                    Date: @payment.TranDate.ToClientTime()
+                </span>
+            </p>
+        }
+    </div>
+}
