@@ -1,0 +1,3670 @@
+Source of information :- 
+http://deepakmodi2006.blogspot.in/
+http://www.javacodegeeks.com/2013/03/my-custom-thread-pool-executor-in-java.html
+http://prep4placement.wordpress.com/
+http://flexaired.blogspot.in/2011/09/design-web-crawler.html ***imp
+http://flexaired.blogspot.in/2011/11/pythogorous-triplets.html ** Java code to find the Pythagoras triplet in any array
+http://learn.yancyparedes.net/2013/09/solving-the-coin-changing-problem-by-dynamic-programming/
+https://myshadesofgray.wordpress.com/2013/06/20/java-hash-collision-in-hashmap/  *** check for Java hash map collision
+http://www.somanyword.com/
+http://stackoverflow.com/questions/1673841/examples-of-gof-design-patterns (brief about all design pattern used in JDK) *** best source
+https://crackinterviewtoday.wordpress.com/2010/03/12/check-whether-given-binary-tree-is-a-bst-or-not/
+http://www.krishnabharadwaj.info/
+http://www.kith.org/logos/things/sitpuz/answers.txt(Lateral puzzles collection.. good questions **) 12th man lives in building and uses elevator
+http://amitdesai03.blogspot.in/2013/04/algorithms-data-structures-interview.html(*****  data structure and algorithm implementation in Java .. nice blog)
+http://ankursinghal86.blogspot.in/2014/07/interview-puzzles.html ** contains good collection of core Java knowledge and puzzles
+https://javajazzle.wordpress.com  *** excellent Java knowledge
+http://k2java.blogspot.in/  ** go thru this site excellent Java knowledge
+http://ydtech.blogspot.in/2010/06/hashmap-hashcode-collision-by-example.html(Excellent core Java blogger ****)
+http://www.cs.cmu.edu/puzzle/puzzle1.html *** puzzle toad for engineering and manager puzzle
+http://surguy.net/articles/communication-across-classloaders.xml // "Absolute Singleton" - a singleton of which only one instance exists across all class loaders
+http://snehaprashant.blogspot.in/2009/01/singleton-pattern-in-java.html //if you are using multiple class loaders, this could defeat the Singleton implementation and result in multiple instances. 
+https://plumbr.eu/blog/performance-blog/amdahls-law-illustrated  //good collection of multi threading articles *** excellent
+http://best-interview.com/design-least-recently-used-lru-cache-java/  // good resource for designing lru cache ...
+http://www.burnison.ca/articles/the-concurrency-of-concurrenthashmap  // good resource for understanding concurrenthashmap
+http://javarticles.com  ** contains good interview resources
+http://www.csanimated.com/animation.php?t=Dynamic_programming  -- good animation site to learn data structure and algorithm in few mints
+http://khangaonkar.blogspot.in/2012/10/java-synchronized-hashmap-vs.html  -- good explanation of diff b/w concurrenthashmap and snyc collection ***IMP
+http://www.javamex.com/ -- Good one
+http://www.javamadesoeasy.com/2015/02/hashmap-custom-implementation.html -- **** contains the custom implementation of several java collection classes like :- hashmap //Excellent - advised to go once 
+http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying  // must read
+http://www.javacamp.org/designPattern/ -- Design pattern link ... good one
+http://ashkrit.blogspot.in/2015/07/efficiency-with-algorithms.html .... high performance link...
+Java interview important notes :- 
+
+Conditions of Singleton pattern:
+1) One and only one instance of that Class.
+2) Can't be cloned as cloning creates a new object violating Design principles of SingletonPattern.
+
+3) Any sub-class of Singleton class should not be allowed as there is a default constructor in Sub-class 
+   and using that multiple objects can be created. So Singleton class should have private default 
+   constructor to avoid getting invoked using super() from sub-class constructor.
+   
+4) Make instance variable as Volatile. volatile ensures that multiple threads handle the object correctly 
+   when it is being initialized in the SingletonPattern. For more details about "volatile", please see
+   at the end of this article.
+   
+5) Also, it should be designed in such a way that even after De-Serialization too, same object should be 
+   returned. As making serialization and de-serialization multiple instances can be created. I have given 
+   an example for this too.
+   
+
+//Full example (SingletonPattern.java)
+public class SingletonPattern {
+    private volatile static SingletonPattern object=null;
+    private SingletonPattern(){}   //No subclass can be created because of this private default constructor.
+
+    public static SingletonPattern getInstance(){ //Never put synchronized in method, else other threads will be 
+                                                  //blocked for getting object.
+        if(object==null){                         //Check instance, if there isn't one, enter a synchronized block.
+          synchronized (SingletonPattern.class) {  //We only synchronized the first time through.
+               if(object==null){                   //Once in the block, double check for null and create an instance.   
+                  object=new SingletonPattern();
+             }
+          }
+        }
+        return object;
+    }
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cloning of this class is not allowed");  
+    }
+}
+
+//Main test class (SingletonMain.java)
+================Tries to extend SingletonClass: Prohibited================
+/*public class SingletonMain extends SingletonPattern {
+    public SingletonMain(){}   //Not allowed, as super class constructor is private.
+    public static void main(String[] args) {
+        SingletonPattern obj=SingletonPattern.getInstance();
+        System.out.println(obj);
+
+    }
+}
+*/
+/*public class SingletonMain extends SingletonPattern { //Not allowed as it assumes a default constructor 
+    //Constructor code is not written here.             //should be there in super class.
+    public static void main(String[] args) {
+        SingletonPattern obj=SingletonPattern.getInstance();
+        System.out.println(obj);
+
+    }
+}
+*/
+
+================Tries to clone SingletonClass: Prohibited================
+//Now your class need to implement Cloneable Interface and then only use the below
+//code, else it will throw exception. Because if a class doesn't implement Cloneable,
+//it can't be cloned.
+
+public class SingletonMain implements Cloneable {                                
+    public static void main(String[] args) throws Exception {
+        SingletonPattern obj=SingletonPattern.getInstance();
+        System.out.println(obj);
+        SingletonPattern main=(SingletonPattern)(obj.clone()); //Will throw exception, cloning is prohibited.
+        System.out.println(main);
+    }
+}
+
+//Output when run SingletonMain class
+SingletonPattern@360be0
+Exception in thread "main" java.lang.CloneNotSupportedException: Cloning of this class is not allowed
+    at SingletonPattern.clone(SingletonPattern.java:17)
+    at SingletonMain.main(SingletonMain.java:25)
+    
+
+============================volatile===========================
+Making instance volatile ensures that mulitple threads handle the object correctly when it is being 
+initialized to the SingletonPattern class.
+
+To Understand example of volatile keyword in java let’s go back to Singleton pattern in Java and see 
+double checked locking in Singleton with Volatile and without volatile keyword in java.
+------------------
+//This example is representation of Singleton Pattern discussed above
+
+public class SingletonPattern {
+    private static volatile SingletonPattern _instance;
+    public static SingletonPattern getInstance() {
+        if(_instance == null){
+            synchronized(SingletonPattern.class){
+                if(_instance == null)
+                    _instance = new SingletonPattern();
+            }
+        }
+    return _instance;
+    }
+}
+------------------
+If you look at the code carefully you will be able to figure out:
+1) We are only creating instance one time
+2) We are creating instance lazily at the time of first request comes.
+
+If we do not make _instance variable volatile then Thread which is creating _instance of SingletonPattern is 
+not able to communicate other thread, that instance has been created until it comes out of the SingletonPattern 
+block, so if Thread A is creating SingletonPattern instance and just after creation lost the CPU, all other 
+threads will not be able to see value of "_instance" as not null and they will believe its still null.
+
+Why because reader threads are not doing any locking and until writer thread comes out of synchronized 
+block, memory will not be synchronized and value of _instance will not be updated in main memory. With 
+Volatile keyword in Java this is handled by Java himself and such updates will be visible by all reader 
+threads.
+
+
+=======Last point to get the same object afer De-Serialization============
+Now suppose we want the above Singleton class to be serializable. We can implement the Serializable interface 
+for the above class and be done with it. But in that case we won’t be able to protect the singleton nature 
+of the instance, such that after de-serialization there will be more than one instance of the class. 
+This can be proved as follows:
+
+Writing again the singleton pattern class:
+////////////SingletonPattern.java
+================================================
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+public class SingletonPattern implements Cloneable, Serializable{
+    private volatile static SingletonPattern object=null;
+    private SingletonPattern(){}   //No subclass can be created because of this private default constructor.
+
+    public static SingletonPattern getInstance(){ //Never put synchronized in method, else other threads will be 
+                                                  //blocked for getting object.
+        if(object==null){                         //Check instance, if there isn't one, enter a synchronized block.
+          synchronized (SingletonPattern.class) {  //We only synchronized the first time through.
+               if(object==null){                   //Once in the block, double check for null and create an instance.   
+                  object=new SingletonPattern();
+             }
+          }
+        }
+        return object;
+    }
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cloning of this class is not allowed");  
+    }    
+}
+================================================
+//////Main class to fetch SingletonPattern Object and do Serialization:
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+public class TestMain {
+    public static void main(String[] args) throws Exception{
+        SingletonPattern object=SingletonPattern.getInstance();
+        System.out.println("Original Singleton Object: "+object);
+        
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File("out3.dat")));  
+        out.writeObject(object);  
+        out.close();  
+
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File("out3.dat")));  
+        SingletonPattern deserObject = (SingletonPattern) in.readObject();  
+
+        //After de-serialization we will get different object
+        System.out.println("Deserialized Singleton Object: "+deserObject);
+        in.close();  
+        
+        //Returning false, should return true.
+        System.out.println("This shows false, should be true: "+(object == deserObject));  
+        
+        //Returning true.
+        System.out.println("This shows true: "+(object == SingletonPattern.getInstance()));  
+    }
+}
+////Output:
+Original Singleton Object: SingletonPattern@164eee
+Deserialized Singleton Object: SingletonPattern@16a04a
+This shows false, should be true: false
+This shows true: true
+================================================
+
+You can analyze the output, two different Singleton Objects are there and equality shows FALSE.
+This breaks the rule of Singleton class. The way to avoid this is using another hook, the readResolve() 
+method. The readResolve() method is called when the  ObjectInputStream has read an object from the 
+stream and is preparing to return it to the caller. ObjectInputStream checks whether the class of the 
+object defines the readResolve() method. If the method is defined, the readResolve method is called to 
+allow any changes in the object before it is returned.
+
+So now we will add the readResolve() method in SingletonPattern.java, the modified code is:
+
+================================
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+public class SingletonPattern implements Cloneable, Serializable{
+    private volatile static SingletonPattern object=null;
+    private SingletonPattern(){}   //No subclass can be created because of this private default constructor.
+
+    public static SingletonPattern getInstance(){ //Never put synchronized in method, else other threads will be 
+                                                  //blocked for getting object.
+        if(object==null){                         //Check instance, if there isn't one, enter a synchronized block.
+          synchronized (SingletonPattern.class) {  //We only synchronized the first time through.
+               if(object==null){                   //Once in the block, double check for null and create an instance.   
+                  object=new SingletonPattern();
+             }
+          }
+        }
+        return object;
+    }
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cloning of this class is not allowed");  
+    }
+    private Object readResolve() throws ObjectStreamException {  
+        return getInstance();  
+    } 
+}
+================================
+
+Now if you run the TestMain program again you will see output (it will show equality as TRUE) and
+objects are equal. It means that even after de-serialization, we still have only one instance of the class in 
+our JVM.
+==============
+//Output
+Original Singleton Object: SingletonPattern@164efe
+Deserialized Singleton Object: SingletonPattern@164efe
+This shows false, should be true: true   
+This shows true: true
+==============
+
+Source of information :- http://deepakmodi2006.blogspot.in/2011/02/serialization-in-java.html
+
+Nice collection and explanation of java concepts.
+
+Serialization in Java
+
+1) What is serialization and how it works?
+2) Impact of SerialVersionUID in Java files and on serialization behaviour.
+3) Impact of serialization and de-serialization on Super class and base classes.
+4) How to make a class or package non-serializable as few of classes in Java like "Thread, 
+   ServerSocket, Socket, DatagramSocket etc" can't be serialized. The reason these classes
+   are tightly coupled with Native OS implementation.
+   
+   Java serialization has been around since the Java version 1.1 days. Serialization is a key/mechanism
+of persisting a Java object for future use, so this persistence can be stored in File or DB anything.
+But the storage of Java object is only possible if you convert an object into bits/bytes. 
+
+Hence Serialization is a mechanism to convert a Java object into bit/byte streams so that it can 
+be stored in either storage media or sent via network to another machine. Then the recipient or reader 
+need to De-Serialize the same bit/bytes pattern and get the actual object.
+
+It is something like Sender is encrypting a Password string and sent over network and then Recipient 
+decrypts the same string and fetches the actual value. 
+
+
+Let’s create a basic class named NonSerializableClass. 
+-----------------------
+    package com.java.serialize;
+    public class NonSerializableClass {
+    }
+-----------------------
+
+Now let’s try to serialize it. Here’s the code to serialize NonSerializableClass.
+-----------------------
+import java.io.*;
+public class NonSerializableTest {
+    public static void main(String[] args) {
+            NonSerializableClass nonSerializableObj = new NonSerializableClass();            
+            try {
+                ObjectOutputStream out=new ObjectOutputStream(new FileOutputStream("HoldSerial.txt"));                
+                out.writeObject(nonSerializableObj);
+                out.close();                
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+    }
+}
+-----------------------
+On running the program we encounter the following exception.
+    Not Serializable Class
+    java.io.NotSerializableException: com.java.serialize.NonSerializableClass
+
+Serialization rule number 1:
+The first rule of serialization is Not all classes are serializable.
+For a class to be serialized it should implement Serializable interface. 
+
+Here’s an example of a Serializable class.
+-----------------------
+    public class SerializableClass implements Serializable {
+       private static final long serialVersionUID = 123L;
+       public SerializableClass() {
+        System.out.println("Inside SerializableClass constructor");
+       }
+    }
+-----------------------
+
+Now let’s try to serialize this. Here’s the serialization code.
+-----------------------
+    public class SerializableTest {
+        public static void main(String[] args) {
+            SerializableClass serObj = new SerializableClass();
+            try {
+                File f = new File("C:\\obj.ser"); //File name can be any thing.
+                f.createNewFile();
+                System.out.println("Serializing Object");
+                FileOutputStream out = new FileOutputStream(f); //Breaking one liner output stream into buffer.
+                BufferedOutputStream buf = new BufferedOutputStream(out);
+                ObjectOutputStream objOut = new ObjectOutputStream(buf);
+                objOut.writeObject(serObj);
+    
+                objOut.close();
+                buf.close();
+                out.close();
+                System.out.println("Serialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+-----------------------
+Serialization works fine without throwing any exceptions. The output of the class run is
+    Inside SerializableClass constructor
+    Serializing Object
+    Serialization complete.
+
+Serialization rule number 2:
+Only Classes implementing Serializable interface support serialization.
+OK we were able to serialize the object, now let’s try to deserialize it. 
+
+Here’s the source code...
+-----------------------
+    public class DeSerializeObjectTest {
+        public static void main(String[] args) {
+            try {
+                File f = new File("C:\\obj.ser");     
+                System.out.println("Deserializing Object");
+                FileInputStream input = new FileInputStream(f);
+                BufferedInputStream buf = new BufferedInputStream(input);
+                ObjectInputStream objip = new ObjectInputStream(buf);
+                Object obj = objip.readObject();
+     
+                SerializableClass ser = (SerializableClass)obj; 
+                objip.close();
+                buf.close();
+                input.close();
+     
+                System.out.println("Deserialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+-----------------------
+The output is 
+    Deserializing Object
+    Deserialization complete.  //Note: Constructor didn't get invoked while deserializing.
+
+So far so good, now let’s add an attribute to the class in question. 
+
+Here’s the new source...
+-----------------------
+    public class SerializableWithParamClass implements Serializable {
+        private static final long serialVersionUID = 137L;
+        private String name = null;
+        public SerializableWithParamClass() {
+            System.out.println("Inside SerializableWithParamClass constructor.");
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+-----------------------
+Here’s the test class code...
+    public class SerializableWithParamTest {
+       public static void main(String[] args) {
+             SerializableWithParamClass param = new SerializableWithParamClass();
+             param.setName("Testing.......");
+             System.out.println("Begining the serialization process.");
+             File f = new File("C:\\paramObj.ser");
+             try {   
+                f.createNewFile();
+                System.out.println("Serializing Object");
+    
+                FileOutputStream out = new FileOutputStream(f);
+                BufferedOutputStream buf = new BufferedOutputStream(out);
+                ObjectOutputStream objOut = new ObjectOutputStream(buf);
+                objOut.writeObject(param);
+     
+                objOut.close();
+                buf.close();
+                out.close();
+                System.out.println("Serialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Ending the serialization process.");
+            System.out.println("Begining the deserialization process.");
+            try {   
+                System.out.println("Deserializing Object");
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(f));
+                ObjectInputStream objip = new ObjectInputStream(buf);
+                Object obj = objip.readObject();
+     
+                SerializableWithParamClass ser = (SerializableWithParamClass)obj;
+                System.out.println("Name: " + ser.getName());
+                objip.close();
+                buf.close();                
+                System.out.println("Deserialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Ending the deserialization process.");
+        }
+    }
+-----------------------
+The output is as follows:
+01    Inside SerializableWithParamClass constructor.
+02    Begining the serialization process.
+03    Serializing Object
+04    Serialization complete.
+05    Ending the serialization process.
+06    Begining the deserialization process.
+07    Deserializing Object
+08    Name: Testing.......
+09    Deserialization complete.
+10    Ending the deserialization process.
+
+I am sure you have noticed by now the attribute serialVersionUID. What’s the need for having this attribute? 
+Whenever object is serialized Java stores the java major and minor version information. Along with this it 
+also needs to store some kind of version information, something which says that I am version 1.0 of this class, 
+on addition/deletion of an attribute or method it should say that I am version 2.0. The serialVersionUID 
+serves this purpose. The developer can define a hard coded value as I have done or allow Java can produce 
+the value at runtime which would be based on the evaluation of the class.
+
+The reason to discuss: Suppose you have serialized your objects into a File and keep using after de-serialization.
+       After 2 years, you have changed your original source code and added/deleted some methods, attributes etc
+       and now serialized your objects again but keeping the older stored/serialized objects as it is with client. 
+       Now if your old serialized objects need to de-serialize with new new code base, it won't work. 
+       It will say java.io.InvalidClassException. I mean Version/SerialVersionUID is modified.
+
+So what affects the value of serialVersionUID and what does not?
+What affects SerialVersionUID change?
+1.    Non-default Constructors
+2.    Addition/Deletion of non-private static or instance methods as well as their access modifiers
+3.    Addition/Deletion of static/instance attributes as well as their access modifiers
+4.    The interfaces implemented by the class
+
+What does not affect SerialVersionUID?
+1.    Default Constructor
+2.    Addition of private static or instance methods
+3.    The class extended by the class to be serialized
+
+Answer from Effective java :- 
+The automatically generated value is
+affected by the class’s name, the names of the interfaces it implements, and all of
+its public and protected members
+
+One approach is to define a fixed value for serialVersionUID as I have done. The benefit is that if we 
+have serialized an object and then added new attribute/method, as the serialVersionUID has not changed, 
+the deserialization process is not hindered. Java force such old serialized objects to de-serialize 
+using new source code if Version is same.
+
+Let’s serialize an object of SerializableClass and then change the serialVersionUID from 123L to 124L
+and then compile it.
+
+Now on deserializing the old object we encounter the following exception:
+1    Deserializing Object
+2    java.io.InvalidClassException: com.java.serialize.SerializableClass; local class incompatible: 
+stream classdesc serialVersionUID = 123, local class serialVersionUID = 124
+
+
+Now let’s examine the impact of serialization on object hierarchy.
+-------------------------     
+    public class A {
+       private String name = null;
+       public A() {
+           System.out.println("Inside A's constructor.");
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+-------------------------     
+    public class B extends A implements Serializable {
+        private String detail = null;
+        public B() {
+            System.out.println("Inside B's constructor.");
+        }
+        public String getDetail() {
+            return detail;
+        }
+        public void setDetail(String detail) {
+           this.detail = detail;
+        }
+    }
+
+Now let’s serialize and deserialize it. Here’s the code...
+------------------------- 
+    public class InheritTest {
+        public static void main(String[] args) {
+            B b = new B();
+            b.setName("Test");
+            b.setDetail("Test Details");
+            System.out.println("Begining the serialization process.");
+            File f = new File("C:\\inheritObj.ser");
+            try {   
+                f.createNewFile();
+                System.out.println("Serializing Object");
+     
+                FileOutputStream out = new FileOutputStream(f);
+                BufferedOutputStream buf = new BufferedOutputStream(out);
+                ObjectOutputStream objOut = new ObjectOutputStream(buf);
+                objOut.writeObject(b);
+                objOut.close();
+                buf.close();
+                out.close();
+                  System.out.println("Serialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Ending the serialization process.");
+            System.out.println("Begining the deserialization process.");
+            try {   
+                System.out.println("Deserializing Object");
+                FileInputStream input = new FileInputStream(f);
+                BufferedInputStream buf = new BufferedInputStream(input);
+                ObjectInputStream objip = new ObjectInputStream(buf);
+                Object obj = objip.readObject();
+     
+                B bSer = (B)obj;
+                System.out.println("Name: " + bSer.getName());
+                System.out.println("Detail: " + bSer.getDetail());
+                objip.close();
+                buf.close();
+                input.close();
+                System.out.println("Deserialization complete.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Ending the deserialization process.");
+        }
+    }
+------------------------- 
+The output generated is:
+01    Inside A's constructor.
+02    Inside B's constructor.
+03    Begining the serialization process.
+04    Serializing Object
+05    Serialization complete.
+06    Ending the serialization process.
+07    Begining the deserialization process.
+08    Deserializing Object
+09    Inside A's constructor.
+10    Name: null
+11    Detail: Test Details
+12    Deserialization complete.
+13    Ending the deserialization process.
+
+Note that during deserialization, the constructor of A is invoked and the attribute value of name is null.
+Now let’s try two options. Make A implement Serializable and let B continue to implement Serializable. 
+-------------------------     
+    public class A implements Serializable{
+        private String name = null;
+        public A() {
+            System.out.println("Inside A's constructor.");
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+-------------------------     
+    public class B extends A implements Serializable {
+        private String detail = null;
+        public B() {
+            System.out.println("Inside B's constructor.");
+        }
+        public String getDetail() {
+            return detail;
+        }
+        public void setDetail(String detail) {
+            this.detail = detail;
+        }
+    }
+-------------------------     
+The output is 
+01    Inside A's constructor.
+02    Inside B's constructor.
+03    Begining the serialization process.
+04    Serializing Object
+05    Serialization complete.
+06    Ending the serialization process.
+07    Begining the deserialization process.
+08    Deserializing Object
+09    Name: Test
+10    Detail: Test Details
+11    Deserialization complete.
+12    Ending the deserialization process.
+
+It is in line with our expectations. Super class constructor didn't invoke.
+Now option two where A implements Serializable and B does not implement Serializable.
+-------------------------     
+    public class A implements Serializable{
+        private String name = null;
+        public A() {
+            System.out.println("Inside A's constructor.");
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+-------------------------     
+    public class B extends A {
+        private String detail = null;
+        public B() {
+            System.out.println("Inside B's constructor.");
+        }
+        public String getDetail() {
+            return detail;
+        }
+        public void setDetail(String detail) {
+            this.detail = detail;
+        }
+    }
+-------------------------     
+The output is
+01    Inside A's constructor.
+02    Inside B's constructor.
+03    Begining the serialization process.
+04    Serializing Object
+05    Serialization complete.
+06    Ending the serialization process.
+07    Begining the deserialization process.
+08    Deserializing Object
+09    Name: Test
+10    Detail: Test Details
+11    Deserialization complete.
+12    Ending the deserialization process.
+
+The output remains unchanged. Super class constructor didn't invoke. 
+
+Java Serialization rule no 3:
+In Object hierarchy the root class needs to implement Serializable interface to ensure serializable 
+of all attributes within the object hierarchy.
+-------------------------
+
+At Last I am discussing how to avoid making a class serializable. Note: If your super class
+doesn't implement Serializable, it can't be serialized but if a sub-class implements, then the whole object
+hierarchy can be serialized again.
+
+To avoid this we need to re-define "writeObject() and readObject()" methods of ObjectOutputStream and 
+ObjectInputStream. I am writing re-define because these methods are declared as final, so can't be overridden.
+
+Below is the complete code:
+--------------------
+//Super class doesn't implement Serializable here but sub class does.
+public class SuperClass {
+    public SuperClass(){
+        System.out.println("Super class constructor called");
+    }
+}
+---------------
+//Sub class
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class BaseClass extends SuperClass implements Serializable {
+    public String name;
+    public BaseClass(){
+        System.out.println("Base class constructor called");
+        name="Deepak modi";
+    }
+    public static void main(String[] args) throws IOException,ClassNotFoundException {
+        BaseClass b=new BaseClass();
+        ObjectOutputStream out=new ObjectOutputStream(new FileOutputStream("HoldSerial.txt"));
+        out.writeObject(b);
+        System.out.println("Base class object serialized/stored in a file");
+
+        ObjectInputStream in=new ObjectInputStream(new FileInputStream("HoldSerial.txt"));
+        BaseClass bIn=(BaseClass)in.readObject();
+        System.out.println("Base class object de-serialized/read from file");
+        System.out.println("Object: "+bIn);
+        System.out.println("Object name value: "+bIn.name);
+    }
+    //Re-defining the method
+    private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
+        System.out.println("These objects can't be de-serialized");
+        throw new IOException("These objects can't be de-serialized");
+    }  
+    private void writeObject(ObjectOutputStream o) throws IOException {  
+        System.out.println("These objects can't be serialized");
+        throw new IOException("These objects can't be serialized");
+    }     
+    public String toString() {  
+        return name;  
+    }  
+}
+
+//Output when you run this main method:
+Super class constructor called
+Base class constructor called
+These objects can't be serialized
+Exception in thread "main" java.io.IOException: These objects can't be serialized
+    at BaseClass.writeObject(BaseClass.java:33)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+    at java.lang.reflect.Method.invoke(Method.java:585)
+    at java.io.ObjectStreamClass.invokeWriteObject(ObjectStreamClass.java:917)
+    at java.io.ObjectOutputStream.writeSerialData(ObjectOutputStream.java:1339)
+    at java.io.ObjectOutputStream.writeOrdinaryObject(ObjectOutputStream.java:1290)
+    at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1079)
+    at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:302)
+    at BaseClass.main(BaseClass.java:17)
+
+
+//You uncomment the "readObject() and "writeObject()" and then see behavior:
+I did that and here is the output:::::::::::
+
+Super class constructor called
+Base class constructor called
+Base class object serialized/stored in a file
+Super class constructor called
+Base class object de-serialized/read from file
+Object: Deepak modi
+Object name value: Deepak modi
+
+------------------------END-----------------------
+
+Wait and notify in java
+
+This is a quite confusing topic. However I hope my explanations will clear your doubt.
+I am writing here wait() and notify() method use case. This is also called producer-consumer
+problem. Just to remind: you can replace notify() with notifyAll() in the given examples below.
+The only difference is notify() awakens only one thread which is waiting to get lock on an object.
+notifyAll() awakens all threads who are waiting to get hold of that object. However it is always CPU's 
+task to which thread CPU allows first to get hold of object. More discussions with example below:
+
+In my example, I have a Bucket Object and two methods on it "InsertIntoBucket" and "DeleteFromBucket".
+I have put a Bucket size, so that it shouldn't grow unlimited. Also one more variable is required 
+for checking whether Bucket is full or not. If full, don't insert data. If empty, don't delete data.
+
+Wanted behavior: If bucket is full, don't insert data. If bucket is empty, don't delete the data.
+Unwanted behavior: Even If bucket is full, try to insert data. Even If bucket is empty, try to delete data. And cause Exceptions..
+
+Points to remember, read carefully:
+
+1) Wait(), Notify() and NotifyAll() are methods of Object class and it is the father of all APIs in Java so 
+   these methods are accessible to Thread class objects too.
+
+2) Each object has its own lock means When multiple threads are trying to access only one object, the Variables 
+   of Object may result in unwanted states causing wrong output to the caller threads. Remember Threads are also 
+   objects but here I am not talking about those Thread objects. 
+   Assume same bucket is trying to get filled and vacated by data by two different Threads. So Bucket is the common 
+   resource being shared by multiple threads.
+
+3) If we allow these 2 threads to access these two methods, they will access randomly as it is decided by the 
+   CPU and we don't have control on the Scheduling, Causing unwanted behaviour.
+
+4) If we make these two methods as Synchronized, only one thread will enter each method (for sake, two threads are 
+   trying to access two methods, you can add as many threads you want to access these two methods). Now even if Bucket 
+   is full, DataInserter thread will try to insert data and if Bucket is empty, DataDeleter thread will try to delete 
+   the data as both have entered into separate blocks, causing Unwanted behavior. Means no thread to going to wait, 
+   till other thread does the task: Means:
+
+    a) Bucket is full, DataInserter thread is not waiting, so that DataDeleter will vacate the bucket for allowing 
+    other thread to insert data successfully.
+    b) Bucket is empty, DataDeleter thread is not waiting, so that DataInserter will insert some data for allowing 
+    other thread to delete data successfully.
+   
+5) Wait() and Notify() can only be within Synchronized and non static methods. Many times interviewers ask what if
+   write just wait() or notify() in main method. Please note: Compiler will not compile your code as wait() and 
+   notify() are non-static methods and you can't access them in main method directly.
+
+6) After implementing this tool, DataDeleter thread will wait for getting some data into Bucket by DataInserter thread.
+Once DataInserter thread inserts the data, it will call Notify(), so that waiting thread will come to know the data
+is available now in bucket. Same thing for other thread too.
+
+7) Wait() means, current thread (which is running inside that block, where Wait() is defined) will leave the object(Bucket) 
+   lock, but it is still there in that block. Once Notify() is called from other thread, this thread will come into action 
+   and will start executing from that line of code.
+
+8) Common point: Notify() will wake up only one waiting thread (which thread, chosen by CPU), NotifyAll() will wake-up all 
+   waiting threads. Check at the beginning of this article.
+
+
+Now Coding Implementation (It is quite easier):
+//Please note, there are 4 java files, all are in same package (default):
+    BucketDeleter.java (Thread File)
+    BucketInserter.java (Thread File)
+    TestWaitNotify.java (Main Java File to start/run this tool).
+    WaitNotify.java (Object with methods and variables)
+
+==========================TestWaitNotify.java===================
+public class TestWaitNotify {
+    public static void main(String[] args) {
+     
+        WaitNotify commonObject = new WaitNotify();
+        //new BucketDeleter(commonObject);
+        new BucketDeleter(commonObject);
+        
+        new BucketInserter(commonObject);
+        //new BucketInserter(commonObject);
+        //new BucketInserter(commonObject);
+        
+        //Un-comment the above thread creation code to see better output, as if 
+        //more number of threads are created then result can be seen better.
+        System.out.println("Running in infinite loop, Press Control-C to stop."); 
+    }
+}
+
+===========================WaitNotify.java====================
+import java.util.*;
+public class WaitNotify {
+    int number;
+
+    public List bucket = null;
+    public WaitNotify(){
+        bucket = new ArrayList();
+    }
+
+    public synchronized void insertIntoBucket(int tempNumber) {
+        if(bucket.size()<10) {
+            bucket.add(tempNumber);
+            System.out.println("Number getting Inserted: "+tempNumber+", Size after insertion: "+bucket.size());
+        }
+        else {
+            System.out.println("List is full, no more insertion");
+            try {
+                System.out.println("Waiting now in insertion method...");
+                wait();  
+            }
+            catch(Exception e) {
+            }
+        }
+        notify();  //Never put this method in above else block else it will cause deadlock after full insertion.
+    }
+
+    public synchronized void deleteFromBucket() {
+        if(bucket.isEmpty()) {
+            System.out.println("Bucket is empty, can't delete the data");
+            try {
+                System.out.println("Waiting now in Deletion method...");
+                wait();
+            }
+            catch(Exception e) {
+            }
+        }
+        else {
+            Object obj = bucket.remove(bucket.size()-1);
+            System.out.println("Deleting one number from bucket: "+ obj+", Size after deletion: "+bucket.size());
+            notify();
+        }
+    }
+}
+
+========================BucketInserter.java====================
+public class BucketInserter implements Runnable {
+    WaitNotify commonObject;
+    BucketInserter(WaitNotify commonObject) {
+        this.commonObject = commonObject;
+        new Thread(this, "BucketInserter").start();
+    }
+    public void run() {
+        int i = 0;
+        while(true) {
+         try {
+    Thread.sleep(1000); //You can comment this, added just to see output properly.
+   } catch (InterruptedException e) {
+    e.printStackTrace();
+   }
+   i=i+1;
+            commonObject.insertIntoBucket(i);
+        }
+    }
+}
+
+=========================BucketDeleter.java=====================
+public class BucketDeleter implements Runnable {
+    WaitNotify commonObject;
+    BucketDeleter(WaitNotify commonObject) {
+        this.commonObject = commonObject;
+        new Thread(this, "BucketDeleter").start();
+    }
+    public void run() {
+        while(true) {
+         try {
+    Thread.sleep(1000); //You can comment this, added just to see output properly.
+   } catch (InterruptedException e) {
+    e.printStackTrace();
+   }
+            commonObject.deleteFromBucket();
+        }
+    }
+}
+====================
+//Now Run the main Class (TestWaitNotify.java) and analyze the output.
+//Run the Main Class after commenting Wait() and Notify() methods.
+//Run the Main Class after removing Synchronized keyword and Wait() and Notify().
+
+================Another sample example of wait() method I am writing:
+//wait() method throws InterruptedException which is a CheckedException, so must 
+//be declared else code will not compile.
+
+public class MainWait {
+ public static void main(String[] args) throws InterruptedException {
+  new MainWait().waitForMe();   
+ }
+ //public synchronized void waitForMe() throws InterruptedException{
+ public void waitForMe() throws InterruptedException{
+  wait();  //Unhandled Exception InterruptedException
+ }
+}
+//wait() must be called inside a synchronized method or block, so above code gives output:=====
+Exception in thread "main" java.lang.IllegalMonitorStateException: current thread not owner
+ at java.lang.Object.wait(Native Method)
+ at java.lang.Object.wait(Object.java:474)
+ at MainWait.waitForMe(MainWait.java:7)
+ at MainWait.main(MainWait.java:3)
+
+But if you make the method synchronized as :
+   public synchronized void waitForMe() throws InterruptedException
+
+or put wait() inside synchronized(this) like below:
+   public void waitForMe() throws InterruptedException{
+      synchronized(this){
+         wait();  //Unhandled Exception InterruptedException
+      }
+   }
+
+//Then your code will run fine and output will be waiting....You have to close the application, I mean click the RED Square button on MyEclipse....
+
+Also deadlock can be seen here: http://deepakmodi2006.blogspot.in/2011/12/deadlock-in-java.html
+
+-------------------------------END---------------------------------
+
+Normalization
+It is a process of refining the data model by ER diagram.
+
+It includes
+  --> Refinement of ER model.
+  --> Segregation of data over groups, entities/tables with min redundancy).
+  --> Converts ER diagram to tables.
+
+Advantages
+  --> min data redundancy.
+  --> retreieve information easily.
+
+Need for normalization
+*) improves data base design.
+*) ensures min redundancy of data
+*) reduces need to reorganize data when design is deleted/enhanced.
+
+Unnormalized tables
+--> contain redundant data
+--> disorganized data
+--> problems arise with insertion,updation and deletion.
+
+
+First Normalization 
+Steps
+1) identify repeating groups of fields.
+2) remove repeating groups of fields to a seperate table.
+3) identify the keys for the table.
+4) key of parent table is brought as a part of concatenated key of second table.
+
+Second Normalization
+Steps
+1) check if all fields are dependent on whole key.
+2) remove fields that are dependent on partial key.
+3) group partially dependent fields as a seperate table.
+4) name the table.
+5) identify key / keys of the table.
+
+Third Normalization
+Steps
+1) removes fields that depend on other non key attribute 
+2) can be calculated or derived from logic.
+3) group independent fields as seperate tables,identify the key.
+
+---------------------------------------------------END-------------------------------------------
+How to avoid Deadlock in Java is one of the question which is flavor of the season for multithreading, 
+asked more at a senior level and with lots of follow up questions, though question looks very basic 
+but most of the developer get stuck once you start going deep.
+
+Questions starts with "What is deadlock ?"
+Answer is simple: When two or more threads waiting for each other to release lock and get stuck for 
+infinite time, situation is called deadlock. It will only happen in case of multitasking.
+
+How do you detect deadlock in Java ?
+Though this could have many answers, my version is first I would look the code if I see 
+nested synchronized block or calling one synchronized method from other or trying to get 
+lock on different object then there is good chance of deadlock if developer is not very careful.
+
+other way is to find it when you actually get locked while running the application, try to 
+take thread dump, in Linux you can do this by command "kill -3", this will print status of 
+all the thread in application log file and you can see which thread is locked on which object.
+
+Another way is to use "jconsole", "jconsole" will show you exactly what are the threads get 
+locked and on which object.
+
+Once you answer this, they may ask you to write code which will result in deadlock ?
+Here is one of my version
+===========================================================
+//ThreadB.java
+public class ThreadB extends Thread {
+    public void run(){
+        method1();
+    }
+    public void method1(){
+        synchronized(Integer.class){
+            System.out.println("ThreadB: Aquired lock on Integer.class object");
+            //Nested synchronized block
+            synchronized (String.class) {
+                System.out.println("ThreadB: Aquired lock on String.class object");
+            }
+        }
+    }
+}
+//ThreadC.java
+public class ThreadC extends Thread {
+    public void run(){
+        method2();
+    }
+    public void method2(){
+        synchronized(String.class){
+            System.out.println("ThreadC: Aquired lock on String.class object");
+            //Nested synchronized block
+            synchronized (Integer.class) {
+                System.out.println("ThreadC: Aquired lock on Integer.class object");
+            }
+        }
+    }
+}
+//MainExample.java
+public class MainExample {
+    public static void main(String[] args){
+        new ThreadB().start();
+        new ThreadC().start();
+    }
+}
+//Output with System/Java console Hanged:
+ThreadB: Aquired lock on Integer.class object
+ThreadC: Aquired lock on String.class object
+===========================================================
+If method1() and method2() both will be called by two or more threads, there is a good chance of 
+deadlock because if Thread1 aquires lock on Sting object while executing method1() and Thread2 
+acquires lock on Integer object while executing method2() both will be waiting for each other to 
+release lock on Integer and String respectively to proceed further which will never happen.
+
+Now interviewer comes to final part, one of the most important in my view, How to fix deadlock? 
+or How to avoid deadlock in Java ?
+
+If you have looked above code carefully you may have figured out that real reason for deadlock is 
+not multiple threads but the way they access lock, if you provide an ordered access then problem 
+will be resolved, here is the fixed version.
+
+===========================================================
+public void method1(){
+    synchronized(Integer.class){
+        System.out.println("Aquired lock on Integer.class object");
+        //Nested synchronized block
+        synchronized (String.class) {
+            System.out.println("Aquired lock on String.class object");
+        }
+    }
+}
+
+public void method2(){
+    synchronized(Integer.class){
+        System.out.println("Aquired lock on Integer.class object");
+        //Nested synchronized block
+        synchronized (String.class) {
+            System.out.println("Aquired lock on String.class object");
+        }
+    }
+}
+===========================================================
+Now deadlock is fixed!!!!! There would not be any deadlock because both method is accessing 
+lock on Integer and String object in SAME ORDER. So if Thread A acquires lock on Integer object, 
+Thread B will not proceed until Thread A releases Integer lock. Same way Thread A will not be 
+blocked even if Thread B holds String lock because now Thread B will not expect Thread A to 
+release Integer lock to proceed further.
+
+Hope this would be useful. Contents are copied from Internet but Example is modified and tested. Link can be seen here: 
+http://javarevisited.blogspot.com/2010/10/what-is-deadlock-in-java-how-to-fix-it.html
+
+-----------------------------------------------------------------------------------------------------------------
+
+Nested Classes
+--------------
+
+Nested Classes in Java
+
+A nested class is a class defined inside the definition (body) of another enclosing class. 
+A nested class can be of two types - static or non-static. A nested class is treated as a 
+member of the enclosing class. A static nested class is not very tightly integrated with 
+the enclosing class and it lives its own independent life as well i.e., a static nested 
+class can be instantiated like any other class from just about anywhere. 
+They are defined inside the definition of an enclosing class just to get a logical grouping 
+of the classes, which in turn increases readability and provides better packaging convenience.
+
+A static nested class can't directly access the members of the enclosing class. Like any other 
+top-level class it needs to access the members of the enclosing class via object references only.
+
+Example: a static nested class
+
+class EnclosingClass {
+ ...
+ ...
+ static class StaticNestedClass{
+  //...definition of the static nested class
+  ...
+  ...
+ }
+ ...
+ ...
+}
+
+A static nested class is accessed using the enclosing class name as follows:
+EnclosingClass.StaticNestedClass staticNestedObjectRef = new EnclosingClass.StaticNestedClass();
+
+Inner Classes in Java
+A non-static nested class is called an inner class and it's tightly integrated with the enclosing 
+class unlike a static nested class. An inner class instance can't exist independent to the enclosing 
+class instance. An inner class instance always exist within the instance of the enclosing class. 
+Since, it's always associated with the enclosing class instance and it has direct access to all the 
+members of the enclosing class - even the private members.
+
+Example: an inner class
+class EnclosingClass {
+ ...
+ ...
+ class InnerClass{
+ //...definition of the inner class
+ ...
+ ...
+ }
+ ...
+ ...
+}
+
+Since, an instance of an inner class always exists within an instance of the enclosing class, hence 
+we must instantiate the enclosing class first and then on that instance we can instantiate the inner class:-
+
+EnclosingClass enclosingObjectRef = new EnclosingClass();
+EnclosingClass.InnerClass innerObjectRef = enclosingObjectRef.new InnerClass();
+
+Can an Inner Class declare static members?
+No. Because any instance of an inner class is always associated with an instance of the enclosing class.
+
+Can we have private or protected access for classes in Java?
+Yeah... but only for nested classes and not for top-level classes. Nested classes 
+are treated as members of the enclosing classes and hence we can specify any of the 
+four access specifiers - private, package, protected, or public. We don't have this luxury 
+with top-level classes - they can only be declared public or package.
+
+Local Inner Classes in Java
+If an inner class has been defined within a code block (typically within the body of a method), 
+then such an inner class is called a local inner class. A local inner class is not a member 
+of the enclosing class and hence it can not have any access specifier. A local inner class 
+will have access to all the members of the enclosing class and it'll have access to the local 
+final variables in the scope it's defined.
+
+Example: a typical local inner class
+public class EnclosingClass{
+...
+ public methodName(){
+  //...definition of the local inner class
+   class LocalInnerClass {
+    ...
+   }
+ ...
+ }
+}
+
+Anonymous Inner Classes in Java
+If an inner class has been declared without a name and within a code block (typically within the 
+body of a method) then such an inner class is called an anonymous inner class. 
+Since such an inner class doesn't have a name associated, so it'll be accessible only at the point 
+where it is defined.
+
+Example: a very common usage of an anonymous inner class
+import java.awt.event.*;
+public class GUI extends JFrame{
+...
+    public void buildComponents(){
+        ...
+        button1 = newJButton();
+        ...
+        button1.addActionListener(new ActionListener(){
+          public void actionPerformed(java.awt.event.ActionEvent ae){
+           ...
+           ...
+          }
+        });
+        ...
+        ...
+   }
+}
+
+Since, an anonymous inner class doesn't have a name, so it can't have a named constructor. 
+But, it can have an instance initializer. Access rules for anonymous inner classes are same as that of 
+local inner classes. Similar to a local inner class, an anonymous inner class can also not have 
+any access specifier attached to it.
+
+Are anonymous inner classes same as local inner classes?
+Yeah..., an anonymous inner class is a local inner class in all means except that it doesn't 
+have a name and hence it can't be used at any other point except at the point where it has 
+been defined. The other difference is that it can't have a named constructor again for the 
+same reason that it doesn't have a name.
+=====================================================================================================
+
+Call by value or Call by reference in Java
+
+In Java:
+Call By value - Premitive types passed in the method call, push their values on stack and hence said as called by Values.
+                So once call is returned from method, all values on STACK has gone vanished.
+
+Call By Reference - Objects passed to any method call, pass their reference on stack and hence said as called by reference.
+
+Remiaining is Call by Address (should be same as call by reference), if not, the person may be addressing following:
+     Static final member variables (constants) passed in the method call which are in the permanent memory 
+     and only the address (or reference) is pushed on stack. As the value on this address can not be changed (only read), 
+     the person is refering it as address and not reference.
+
+In Java, it is "call by value". 
+If you pass any object reference for swapping in Java (since it is call by value), swapping fails. I mean it is useless once
+method call is ended. Here Java copies the reference and sends to method as value. So if you do some change in attribute 
+of passed Object, then only the original object changes.
+
+====In the below code, I have written two methods for swapping "swapObjects" and "modifyAndSwapObjects". Check carefully:
+//Employee.java
+public class Employee {
+    int x=0;
+    public Employee(String name){
+        x=name.length();
+    }
+}
+
+//CallByValue.java : Main Class
+public class CallByValue {
+    public static void main(String[] args) {
+        Employee rajeev = new Employee ("rajeev") ;
+        Employee mohan = new Employee("mohan") ;
+        System.out.println("Before:"+rajeev+", rajeev.x:"+rajeev.x);
+        System.out.println("Before:"+mohan+", mohan.x:"+mohan.x);
+        
+        new CallByValue().swapObjects ( rajeev, mohan);
+        System.out.println("After swapObjects:"+rajeev+", rajeev.x:"+rajeev.x);
+        System.out.println("After swapObjects:"+mohan+", mohan.x:"+mohan.x);
+        
+        new CallByValue().modifyAndSwapObjects ( rajeev, mohan);
+        System.out.println("After modifyAndSwapObjects:"+rajeev+", rajeev.x:"+rajeev.x);
+        System.out.println("After modifyAndSwapObjects:"+mohan+", mohan.x:"+mohan.x);
+    }
+
+    public void swapObjects (Employee x, Employee y){
+        Employee temp = new Employee (" ");
+        temp = x;
+        x = y;
+        y = temp;   //This swapping will not make any difference after method call ends.
+    }
+    public void modifyAndSwapObjects (Employee x, Employee y){
+        Employee temp = new Employee ("Raj");
+        x.x=20;   //Attribute is changed and hence this value will persist for X object.
+        temp = x;
+        x = y;
+        y = temp;
+    }
+}
+//Output:
+Before:Employee@164be2, rajeev.x:6
+Before:Employee@164be4, mohan.x:5
+After swapObjects:Employee@164be2, rajeev.x:6              //Even after swap, lenght is still 6 and Hashcode is the same.
+After swapObjects:Employee@164be4, mohan.x:5               //Even after swap, lenght is still 5 and Hashcode is the same.
+After modifyAndSwapObjects:Employee@164be2, rajeev.x:20    //Here attribute is changed, so value persist.
+After modifyAndSwapObjects:Employee@164be4, mohan.x:5      //Another object's attribute is not changed, so no change in value.
+
+===============================END===============================
+Here I am writing a "Horse Racing" design which is generally asked in Interview questions in Java for
+Experienced people.
+
+//This is the main class, you have to execute.
+public class HorseRace {
+    public static void main( String args[] ) {
+        Horse[] horseArray = new Horse[4];  //Initializing 4 Horses
+        for (int i=0; i<horseArray.length; i++) {
+            horseArray[i] = new Horse(i+1);
+        }
+        System.err.println( "!!!!!!!!!Starting race!!!!!!!!" );
+        Horse.resetRace();
+        for (int i=0; i<horseArray.length; i++) { 
+            horseArray[i].start();
+        }
+        
+        Reporter rpt = new Reporter(horseArray);
+        rpt.start();
+    }
+}
+
+//The below Reporter class is for Displaying purpose, which shows the Horse and Distance Status
+public class Reporter extends Thread {
+    Horse[] horse;
+    public Reporter(Horse[] h) {
+        System.out.println("And they have left ground...");
+        horse = h;
+    }
+    public void run() {
+        System.out.print("Horse Label==>");
+        for (int i=0; i<horse.length; i++) {
+            System.out.printf("%5d ", (i+1));
+        }
+        System.out.println();
+        while (!Horse.done()) {
+            System.out.println();
+            System.out.print("Distance      ");
+            for (int i=0; i<horse.length; i++) {
+                System.out.printf("%5d ", horse[i].getDistance());
+            }
+        }
+        System.out.print("\r");
+        System.out.print("Distance      ");
+        for (int i=0; i<horse.length; i++) {
+            System.out.printf("%5d ", horse[i].getDistance());
+        }
+        System.out.println("\nAnd the winner is "+ Horse.getWinner());
+    }
+}
+
+//This is the actual Horse class, we need as many Instances of this class as number of Horse. Check the 
+//main class for the same.
+
+class Horse extends Thread {
+    private static boolean raceOver = false;
+    private static final int raceLength = 3;  //You can choose this.
+    private static String winner = "";
+    private int distance;
+    private String name = "";
+
+    public Horse(int id) {
+        name = "Horse #" + id;
+        distance = 0;
+    }
+
+    public static void resetRace() { 
+        raceOver = false; 
+    }
+    public static boolean done() { 
+        return raceOver; 
+    }
+    public static String getWinner() { 
+        return winner; 
+    }
+    public int getDistance() { 
+        return distance; 
+    }
+
+    public void run() {
+        while (!raceOver) {
+            try {
+                //Get a little rest and then move
+                Thread.sleep((int)(Math.random() * 500));
+                if (++distance >= raceLength) 
+                    raceOver = true;
+            } catch (InterruptedException e) {
+                System.err.println(e);
+            }
+        }
+        if (distance == raceLength) winner = name;
+    }
+}
+
+//Output:
+
+!!!!!!!!!Starting race!!!!!!!!
+And they have left ground...
+Horse Label==>    1     2     3     4 
+
+Distance          0     0     0     0 
+Distance          0     0     0     0 
+------------
+------------
+------------
+Distance          1     2     1     0 
+Distance          1     3     1     0 
+And the winner is Horse #2
+
+//You can see the Horse Label 2 has completed the distance/race length first.
+
+========================================================================================
+
+puzzles can be found here : - ttp://worksheets.theteacherscorner.net/make-your-own/brain-teasers/
+
+============================================================================================
+
+Thread safety and Synchronization at Class level in Java
+
+Can someone throw some light on the behaviour of class/object level monitor in java? Does one takes 
+precedence over other? What happens when, class has both synchronized instance methods and synchronized static methods? 
+Does calling thread has to acquire both class/object locks?
+
+Answer:
+    Those locks are not related, and each needs to be obtained regardless of the other. Namely, if you have:
+    
+    class Foo{
+        static synchronized void staticMethod(){}
+        synchronized void instanceMethod(){}
+    }
+
+    And then an instance: Foo f=new Foo();
+    
+    Then you have 2 unrelated monitors (one for class Foo, one for instance f ). Any threads attempting to invoke 
+    staticMethod() will need to gain access to the (single) class monitor, and nothing else. Any threads calling 
+    f.instanceMethod() will need to gain access to "f" monitor, and nothing else.
+    
+    If you need any access hierarchy, you'll need to do it programatically, which may look as follows (however, beware 
+    - such nested locks pose some dangers of deadlocks unless used with care):
+    
+    synchronized(Foo.class){
+        synchronized(f){
+            // my code
+        }
+    } 
+
+    -------------------------------------------------------------
+    A synchronized method acquires a lock before it executes. For a class (static) method, the lock associated with the 
+    Class object for the method's class is used. For an instance method, the lock associated with this (the object for 
+    which the method was invoked) is used.
+
+    class Test {
+        int count;
+        synchronized void bump() { 
+            count++; 
+        }
+        static int classCount;
+        static synchronized void classBump() {
+            classCount++;
+        }
+    }
+
+    It has exactly the same effect as:
+    -------------------------
+    class BumpTest {
+        int count;
+        void bump() {
+            synchronized (this) {
+                count++;
+            }
+        }
+        static int classCount;
+        static void classBump() {
+            try {
+                synchronized (Class.forName("BumpTest")) {
+                    classCount++;
+                }
+            } catch (ClassNotFoundException e) {
+            ...
+            }
+        }
+    }
+    -------------------------
+
+    I assume that since we are dealing with 2 different locks then Class lock will lock all static synch methods and 
+    'this' lock will lock all synch instance methods.
+----------------------------------------------------------
+Actually we should follow a standard policy here called "Don't Wake The Zombies", basically, rather than wake up a 
+5 year old thread. However, if You ask only one synchronized static method can be called at a time. The answer is yes, 
+for a given Class, only one synchronized static method can be called at a time. Synchronized static methods of different 
+Classes, however, can be called at the same time, because the lock is on different instances of the Class object.
+
+-------------------------------------------END------------------------------------------
+
+I have already written equals() and hashCode() as a part of "How HashMap works in Java", however writing
+it again by making very simple example. HashMap related stuff can be seen in the below link:
+http://deepakmodi2006.blogspot.in/2012/03/hashmap-in-java.html
+
+Below are the points to remember:
+    1) These two methods are defined in java.lang.Object class.
+    2) If two objects are equal using equals() method (not ==) then their hashCode must be same.
+    3) If hashCode are same for two or more than two objects, they may not be equal using equals() method.
+    4) Overridding both methods in your API is not mandatory, you can override any one method.
+    
+    5) At last written the Contract based on what both method works as specified in Java Doc.
+    6) Also make sure don't use random number generator in hashCode method, as it generates unexpected number, 
+       every time you run the code and you will not be able to generate same hashCode for the same object passed.
+       I mean suppose we generate hashCode() using a class Person's object based on this:
+   
+       public int hashCode(){
+         return (int)Math.random()+firstName.hashCode()+lastName.hashCode();
+       }
+   
+       Now for name "Deepak Modi" and "Deepak Kumar", hashCode should be different. Of course it is different here 
+       in first run of the program. But when you run the program again without making any changes, you will get again 
+       different hashCode what you generated for "Deepak Modi" and "Deepak Kumar" earlier. Java Spec don't say this. 
+   
+
+Please see below example:
+===================================================
+import java.util.HashMap;
+import java.util.Map;
+
+public class EqualsClass {
+    String name;
+    int id;
+    public EqualsClass(){}
+    public EqualsClass(String name, int id){
+        this.id=id;
+        this.name=name;
+    }    
+    @Override
+    public int hashCode(){
+        return 34;
+    }
+    public static void main(String[] args) {
+        Map m=new HashMap();
+        m.put("A", "65");
+        m.put("B", "66");
+        m.put("C", "67");
+        System.out.println("Initially Map contains: "+m);
+
+        EqualsClass p1=new EqualsClass("Deepak1",1);
+        EqualsClass p2=new EqualsClass("Deepak2",2);
+        m.put(p1,"Deepak1");
+        m.put(p2,"Deepak2");
+
+        System.out.println("After adding our Objects, Map contains: "+m);
+        System.out.println("First object hashCode: "+p1.hashCode());
+        System.out.println("Second object hashCode: "+p2.hashCode());
+        System.out.println("p1.equals(p2): "+p1.equals(p2));
+        System.out.println("p1==p2: "+(p1==p2));
+    }
+}
+//Output:
+Initially Map contains: {A=65, C=67, B=66}
+After adding our Objects, Map contains: {EqualsClass@22=Deepak2, EqualsClass@22=Deepak1, A=65, C=67, B=66}
+First object hashCode: 34
+Second object hashCode: 34
+p1.equals(p2): false
+p1==p2: false
+
+NOTE: Analyze the above output. HashCode of both objects are same even then they are not equal.
+      I have written only hashCode() method and not equals(), it runs fine. Overridding both are not mandatory.
+      Now I will add equals() method and then see:
+
+=============
+import java.util.HashMap;
+import java.util.Map;
+
+public class EqualsClass {
+    String name;
+    int id;
+    public EqualsClass(){}
+    public EqualsClass(String name, int id){
+        this.id=id;
+        this.name=name;
+    }
+    @Override
+    public boolean equals(Object obj){
+        return true;
+    }
+    @Override
+    public int hashCode(){
+        return 34;
+    }
+    public static void main(String[] args) {
+        Map m=new HashMap();
+        m.put("A", "65");
+        m.put("B", "66");
+        m.put("C", "67");
+        System.out.println("Initially Map contains: "+m);
+
+        EqualsClass p1=new EqualsClass("Deepak1",1);
+        EqualsClass p2=new EqualsClass("Deepak2",2);
+        m.put(p1,"Deepak1");
+        m.put(p2,"Deepak2");
+
+        System.out.println("After adding our Objects, Map contains: "+m);
+        System.out.println("First object hashCode: "+p1.hashCode());
+        System.out.println("Second object hashCode: "+p2.hashCode());
+        System.out.println("p1.equals(p2): "+p1.equals(p2));
+        System.out.println("p1==p2: "+(p1==p2));
+    }
+}
+//Output:
+Initially Map contains: {A=65, C=67, B=66}
+After adding our Objects, Map contains: {EqualsClass@22=Deepak2, A=65, C=67, B=66}
+First object hashCode: 34
+Second object hashCode: 34
+p1.equals(p2): true
+p1==p2: false
+---------------      
+NOTE: Analyze the above output. I have made HashCode of all objects same and equals() method is returning true in 
+      all the cases. Result: All objects are treated as equal. Also the last object in Map overrides the previous 
+      Key in Map.
+
+equals() Method contract: The equals method implements an equivalence relation:
+ 1. It is reflexive: for any reference value x, x.equals(x) should return true.
+ 2. It is symmetric: for any reference values x and y, x.equals(y) should return true if and only if y.equals(x) 
+    returns true.
+ 3. It is transitive: for any reference values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, 
+    then x.equals(z) should return true.
+ 4. It is consistent: for any reference values x and y, multiple invocations of x.equals(y) consistently return true or 
+    consistently return false, provided no information used in equals comparisons on the object is modified.
+ 5. For any non-null reference value x, x.equals(null) should return false.      
+ 6. It is necessary to override the hashCode method whenever this equals method is overridden, so as to maintain the 
+    general contract for the hashCode method, which states that equal objects must have equal hash codes.       
+ 7. If two references are pointing to same object, I mean if x==y, then they x.equals(y) will result true.    
+      
+
+hashCode() Method contract: Returns a hash code value for the object. This method is supported for the benefit of 
+    HashTables/HashMaps. The general contract of hashCode is:
+ 1. Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method 
+    must consistently return the same integer, provided no information used in equals comparisons on the object is modified. 
+    This integer need not remain consistent from one execution of an application to another execution of the same application.
+    Hence we should avoid using Math.random() or Random Class API for generating hashCode() as random will generate random
+    values for the same object everytime we run to fetch hashCode().
+    
+ 2. If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two 
+    objects must produce the same integer result. If two objects are un-equal according to the equals(java.lang.Object) 
+    method, then calling the hashCode method on each of the two objects may produce same integer results. However, the 
+    programmer should be aware that producing distinct integer results for un-equal objects will improve the performance of 
+    HashTables/HashMaps.
+    
+ 3. As much as is reasonably practical, the hashCode method defined by class Object does return distinct integers for 
+    distinct objects. This is typically implemented by converting the internal address of the object into an integer.     
+
+--------------
+So finally an example of correct implementation:
+-----------------------
+public class Test {
+    private int num;
+    private String data;
+
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+
+        //Now Object must be Test at this point as rest all are filtered above
+        Test test = (Test)obj;
+        return num == test.num &&
+               (data == test.data ||
+                (data!=null && data.equals(test.data)) 
+               );
+    }
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + num;
+        hash = 31 * hash + (null == data ? 0 : data.hashCode());
+        return hash;
+    }
+    //Other methods
+}
+
+NOTE: A common loop hole people use in equals() method like "instanceof" operator as below:
+      Always use this: 
+            (obj.getClass() != this.getClass())) return false;  //Use this
+      
+      As compare to: 
+            if(!(obj instanceof Test)) return false;  //Never use this
+
+      This is because, the first condition ensures that it will return false if the argument is a subclass of the class 
+      Test. However, in case of the second condition (instanceof) it returns true. The instanceof operator condition fails 
+      to return false if the argument is a subclass of the class Test. Thus, it might violate the symmetry requirement of 
+      the contract. The instanceof check is correct only if the class is final, so that no subclass would exist. 
+      
+-------------------------END----------------------------    
+
+I have mentioned below topics in this blog article:
+1) How HashMap works in Java.
+2) Difference between HashMap and HashTable. 
+3) At the end few programs having implementation of equals() and hashCode() method
+   and impact of these methods on HashMap storage.
+
+How HashMap works in Java is a very common question. Almost everybody who worked 
+in Java knows what hashMap is, where to use hashMap or difference between 
+hashTable and HashMap, then why this interview question becomes so special? Because of the breadth and depth 
+this question offers. It has become very popular java interview question in almost any senior or mid-senior 
+level java interviews.
+
+Questions start with simple statement:
+"Have you used HashMap before" or "What is HashMap? Why do we use it“
+Almost everybody answers this with yes and then interviewee keep talking about common facts about HashMap like 
+HashMap accept null while hashTable doesn't, HashMap is not synchronized, hashMap is fast and so on along with 
+basics like its stores key and value pairs etc.
+This shows that person has used HashMap and quite familiar with the functionality HashMap offers but interview 
+takes a sharp turn from here and next set of follow up questions gets more detailed about fundamentals involved 
+in HashMap. Interview here you and come back with questions like
+
+"Do you Know how HashMap works in Java” or "How does get () method of HashMap works in Java"
+And then you get answers like I don't bother its standard Java API, you better look code on java; I can find 
+it out in Google at any time etc.
+But some interviewee definitely answer this and will say "HashMap works on principle of hashing, we have put() 
+and get() method for storing and retrieving data from HashMap. When we pass an object to put () method to store 
+it on HashMap, HashMap implementation calls hashcode() method HashMap key object and by applying that hashcode on 
+its own hashing function it identifies a bucket location for storing value object , important part here is HashMap 
+stores both key+value in bucket which is essential 
+to understand the retrieving logic. if people fails to recognize this and say it only stores Value in the bucket they 
+will fail to explain the retrieving logic of any object stored in HashMap . This answer is very much acceptable and 
+does make sense that interviewee has fair bit of knowledge how hashing works and how HashMap works in Java.
+But this is just start of story and going forward when depth increases a little bit and when you put interviewee on 
+scenarios every java developers faced day by day basis. So next question would be more likely about collision 
+detection and collision resolution in Java HashMap e.g 
+
+"What will happen if two different objects have same hashCode?”
+Now from here confusion starts some time interviewer will say that since hashCode is equal objects are equal and 
+HashMap will throw exception or not store it again etc. then you might want to remind them about equals and hashCode() 
+contract that two unequal object in Java very much can have equal hashCode. Some will give up at this point and some 
+will move ahead and say "Since hashCode () is same, bucket location would be same and collision occurs in HashMap, 
+Since HashMap uses a linked list to store in bucket, value object will be stored in next node of linked list." 
+Great this answer make sense to me though there could be some other collision resolution methods available this is 
+simplest and HashMap does follow this. See the program at the end of this article.
+
+But story does not end here and final questions interviewer ask like:
+"How will you retrieve if two different objects have same hashcode?”
+Hmmmmmmmmmmm
+Interviewee will say we will call get() method and then HashMap uses keys hashCode to find out bucket location and 
+retrieves object but then you need to remind him that there are two objects are stored in same bucket , so they will 
+say about traversal in linked list until we find the value object , then you ask how do you identify value object 
+because you don't value object to compare ,So until they know that HashMap stores both Key and Value in linked list 
+node they won't be able to resolve this issue and will try and fail.
+
+But those bunch of people who remember this key information will say that after finding bucket location , we will call 
+keys.equals() method to identify correct node in linked list and return associated value object for that key in Java 
+HashMap. Perfect this is the correct answer.
+
+In many cases interviewee fails at this stage because they get confused between hashcode() and equals() and keys and 
+values object in hashMap which is pretty obvious because they are dealing with the hashcode() in all previous questions 
+and equals() come in picture only in case of retrieving value object from HashMap.
+Some good developer point out here that using immutable, final object with proper equals() and hashcode() 
+implementation would act as perfect Java HashMap keys and improve performance of Java hashMap by reducing collision. 
+Immutability also allows caching there hashcode of different keys which makes overall retrieval process very fast and 
+suggest that String and various wrapper classes e.g Integer provided by Java Collection API are very good HashMap keys.
+
+Now if you clear all this java hashmap interview question you will be surprised by this very interesting question 
+"What happens On HashMap in Java if the size of the Hashmap exceeds a given threshold defined by load factor ?". 
+Until you know how hashmap works exactly you won't be able to answer this question.
+if the size of the map exceeds a given threshold defined by load-factor e.g. if load factor is .75 it will act to 
+re-size the map once it filled 75%. Java Hashmap does that by creating another new bucket array of size twice of 
+previous size of hashmap, and then start putting every old element into that new bucket array and this process is 
+called rehashing because it also applies hash function to find new bucket location. 
+
+If you manage to answer this question on hashmap in java you will be greeted by "do you see any problem with resizing 
+of hashmap in Java", you might not be able to pick the context and then he will try to give you hint about multiple 
+thread accessing the java hashmap and potentially looking for race condition on HashMap in Java. 
+
+So the answer is Yes there is potential race condition exists while resizing hashmap in Java, if two thread at the same 
+time found that now Java Hashmap needs resizing and they both try to resizing. on the process of resizing of hashmap in 
+Java, the element in bucket which is stored in linked list get reversed in order during there migration to new bucket 
+because java hashmap doesn't append the new element at tail instead it append new element at head to avoid tail traversing. 
+If race condition happens then you will end up with an infinite loop. though this point you can potentially argue that 
+what the hell makes you think to use HashMap in multi-threaded environment to interviewer :). 
+Never use it in multithreaded env. For MultiThreaded use ConcurrentHashMap.
+
+I like this question because of its depth and number of concept it touches indirectly, if you look at questions asked 
+during interview this HashMap questions has verified:
+    Concept of hashing
+    Collision resolution in HashMap
+    Use of equals () and hashCode () method and there importance?
+    Benefit of immutable object?
+    race condition on hashmap in Java
+    Resizing of Java HashMap
+
+Just to summarize here are the answers which does makes sense for above questions:
+How HashMAp works in Java
+HashMap works on principle of hashing, we have put() and get() method for storing and retrieving object form hashMap.
+When we pass an both key and value to put() method to store on HashMap, it uses key object hashcode() method to calculate 
+hashcode and they by applying hashing on that hashcode it identifies bucket location for storing value object.
+While retrieving it uses key object's equals method to find out correct key value pair and return value object associated 
+with that key. HashMap uses linked list in case of collision and object will be stored in next node of linked list.
+Also hashMap stores both key+value tuple in every node of linked list.
+
+What will happen if two different HashMap key objects have same hashcode?
+They will be stored in same bucket but no next node of linked list. And keys equals() method will be used to identify 
+correct key value pair in HashMap.
+
+In terms of usage HashMap is very versatile and can be mostly used hashMap as cache in electronic trading application. 
+Since finance domain used Java heavily and due to performance reason we need caching a lot, HashMap comes very handy there.
+
+For new insertions, If key is same i.e. equals by equals method in Java than hashcode would be same and value will be 
+replaced but if key is not same i.e. not equal but hashcode is same (Which is possible in java) than bucked location 
+would be same and collision would happen and second object will be stored on second node of linked list structure 
+on Map. 
+
+So key.equals() is used on both put() and get() method call if object already exits in bucked location on hashmap 
+and that's why tuples contains both key and value in each node. In Java Object helpfully provides hashCode() and equals() 
+so we know that any object will be usable as a key in a hashtable.
+
+So the known risks when using HashMap data structure in multi threaded env are: HashMap internal index corruption 
+and infinite looping, which can bring your JVM to its knees.
+
+What JDK Map data structure is more suitable to handle concurrent read & write operations in a Java EE environment?
+The answer is to use the ConcurrentHashMap, introduced in JDK 1.5, which provides Thread safe operations but no 
+blocking get() operation; which is key for proper performance. This is the typical data structure used these 
+days in modern Java EE container implementations.
+
+JDK 1.5 introduce some good concurrent collections which is highly efficient for high volume, low latency system.
+
+The synchronized collections classes, Hashtable and Vector, and the synchronized wrapper classes, 
+Collections.synchronizedMap and Collections.synchronizedList, provide a basic conditionally thread-safe implementation 
+of Map and List.
+However, several factors make them unsuitable for use in highly concurrent applications -- their single collection-wide 
+lock is an impediment to scalability and it often becomes necessary to lock a collection for a considerable time during 
+iteration to prevent ConcurrentModificationExceptions.
+
+The ConcurrentHashMap and CopyOnWriteArrayList implementations provide much higher concurrency while preserving thread 
+safety, with some minor compromises in their promises to callers. ConcurrentHashMap and CopyOnWriteArrayList are not 
+necessarily useful everywhere you might use HashMap or ArrayList, but are designed to optimize specific common situations. 
+Many concurrent applications will benefit from their use.
+
+So what is the difference between hashtable and ConcurrentHashMap , both can be used in multithreaded environment but 
+once the size of hashtable becomes considerable large performance degrade because for iteration it has to be locked 
+for longer duration.
+
+Since ConcurrentHashMap indroduced concept of segmentation , how large it becomes only certain part of it get locked 
+to provide thread safety so many other readers can still access map without waiting for iteration to complete.
+
+In Summary ConcurrentHashMap only locked certain portion of Map while Hashtable lock full map while doing iteration.
+
+HashMap can be synchronized by:
+ Map m = Collections.synchronizeMap(hashMap);
+ 
+Difference between HashMap and HashTable? 
+1. The HashMap class is roughly equivalent to Hashtable, except that it is non synchronized and permits nulls. 
+   (HashMap allows null values as key and value whereas Hashtable doesn't allow nulls).
+2. HashMap does not guarantee that the order of the map will remain constant over time.
+3. HashMap is non synchronized whereas Hashtable is synchronized.
+4. Iterator in the HashMap is  fail-fast  while the enumerator for the Hashtable is not and throw 
+ConcurrentModificationException if any other Thread modifies the map structurally  by adding or removing any 
+element except Iterator's own remove()  method. But this is not a guaranteed behavior and will be done by 
+JVM on best effort.
+5) HashTable extends Dictionary interface which is quite old while hashmap extends Map interface.
+6) hashtalbe doesn't have counterpart like ConcurrentHashMap.
+
+Note on Some Important Terms:
+1)Synchronized means only one thread can modify a hashtable at one point of time. Basically, it means that 
+any thread before performing an update on a hashtable will have to acquire a lock on the object while others 
+will wait for lock to be released.
+
+2)Fail-safe is relevant from the context of iterators. If an iterator has been created on a collection object 
+and some other thread tries to modify the collection object "structurally", a concurrent modification exception
+will be thrown. It is possible for other threads though to invoke "set" method since it doesn't modify the 
+collection "structurally". However, if prior to calling "set", the collection has been modified structurally, 
+"IllegalArgumentException" will be thrown.
+
+3)Structurally modification means deleting or inserting element which could effectively change the structure 
+of map.
+
+
+=================Other important points about use of Map============
+1) If the Class's object which is getting stored in Map, overrites equals() and hashCode() method and
+   hashCode() returns a fixed value like "45" or "10" and equals() return "true" for all cases as explained 
+   in below coding then Map objects will be considered as Duplicate, so only one Pair will be shown as output.
+   Check the MainMap.java program below:
+
+//Person.java (overriding equals() and hashCode() method
+public final class Person {
+    final String name;
+    public Person(String name){
+        this.name=name;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        //return super.equals(obj);
+        return true;
+    }
+    @Override
+    public int hashCode() {
+        return 45;
+    }
+}
+
+===========
+//MainMap.java
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+public class MainMap {
+    public static void main(String[] args) {
+        Person a=new Person("John");
+        Person b=new Person("Deepak");
+        Person c=new Person("John");
+        Person d=new Person("John");
+
+        System.out.println("a.hashCode():"+a.hashCode());
+        System.out.println("b.hashCode():"+b.hashCode());
+        System.out.println("c.hashCode():"+c.hashCode());
+        System.out.println("d.hashCode():"+d.hashCode());
+
+        HashMap map=new HashMap();
+        map.put(a,"John");
+        map.put(b, "Deepak");
+        map.put(c,"John");
+        System.out.println("Map contents: "+map);
+
+        System.out.println("Trying to get object \"d\" : "+map.get(d));
+
+        Set s=new HashSet();
+        s.add(a);
+        s.add(b);
+        s.add(c);
+        System.out.println("Set containing Person objects :"+s);
+        //System.out.println(s.get(d)); //get method is not allowed in Set.
+        System.out.println("Does Set contains Person d object \"d\": "+s.contains(d));  //false
+
+        s.clear();
+        Integer intObj1=new Integer("0");
+        Integer intObj2=new Integer("0");
+        s.add(intObj1);
+        s.add(intObj2);
+        System.out.println("Set containing Integer objects :"+s);
+
+        s.clear();
+        String stringObj1=new String("0");
+        String stringObj2=new String("0");
+        s.add(stringObj1);
+        s.add(stringObj2);
+        System.out.println("Set containing String objects :"+s);
+
+
+        s.clear();
+        StringBuffer stringBuffObj1=new StringBuffer("0");
+        StringBuffer stringBuffObj2=new StringBuffer("0");
+        s.add(stringBuffObj1);
+        s.add(stringBuffObj2);
+        System.out.println("Set containing StringBuffer objects :"+s);
+        
+        s.clear();
+        Thread threadObj1=new Thread("0");
+        Thread threadObj2=new Thread("0");
+        s.add(threadObj1);
+        s.add(threadObj2);
+        System.out.println("Set containing Thread objects :"+s);
+    }
+}
+==========
+//Output:
+a.hashCode():45
+b.hashCode():45
+c.hashCode():45
+d.hashCode():45
+Map contents: {Person@2d=John}   //Map shows only one entry.
+Trying to get object "d" : John  //Value is printed, even though we have not copied this value to Map.
+Set containing Person objects :[Person@2d]   //Set shows only one entry.
+Does Set contains Persond object "d": true
+Set containing Integer objects :[0]
+Set containing String objects :[0]
+Set containing StringBuffer objects :[0, 0]
+Set containing Thread objects :[Thread[0,5,main], Thread[0,5,main]]
+
+
+******************
+However if you change the equals() method like below:
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+        //return true;
+    }
+
+//Output:
+a.hashCode():45   //Our defined hashCode
+b.hashCode():45
+c.hashCode():45
+d.hashCode():45
+Map contents: {Person@2d=John, Person@2d=Deepak, Person@2d=John} //Map shows 3 entries
+Trying to get object "d" : null   //Null is printed.
+Set containing Person objects :[Person@2d, Person@2d, Person@2d] //Set shows 3 entries
+Does Set contains Persond object "d": false
+Set containing Integer objects :[0]
+Set containing String objects :[0]
+Set containing StringBuffer objects :[0, 0]
+Set containing Thread objects :[Thread[0,5,main], Thread[0,5,main]]
+
+******************
+Also if you change the equals() and hashCode() method like below:
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+        //return true;
+    }
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+//Output:
+a.hashCode():2314539   //System defined hashCode.
+b.hashCode():2043177526
+c.hashCode():2314539
+d.hashCode():2314539
+Map contents: {Person@79c86a36=Deepak, Person@23512b=John, Person@23512b=John}  //Map shows 3 entries
+Trying to get object "d" : null   //Null is printed.
+Set containing Person objects :[Person@79c86a36, Person@23512b, Person@23512b]  //Set shows 3 entries
+Does Set contains Persond object "d": false
+Set containing Integer objects :[0]
+Set containing String objects :[0]
+Set containing StringBuffer objects :[0, 0]
+Set containing Thread objects :[Thread[0,5,main], Thread[0,5,main]]
+
+******************
+Also if you change the equals() and hashCode() method like below:
+    @Override
+    public boolean equals(Object obj) {        
+        return true;
+    }
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }    
+
+//Output:
+a.hashCode():2314539
+b.hashCode():2043177526
+c.hashCode():2314539
+d.hashCode():2314539
+Map contents: {Person@79c86a36=Deepak, Person@23512b=John}   //Map shows 2 entries with different name.
+Trying to get object "d" : John        //Value is printed, even though we have not copied this value to Map.
+Set containing Person objects :[Person@79c86a36, Person@23512b] //Set shows 3 entries
+Does Set contains Persond object "d": true
+Set containing Integer objects :[0]
+Set containing String objects :[0]
+Set containing StringBuffer objects :[0, 0]
+Set containing Thread objects :[Thread[0,5,main], Thread[0,5,main]]
+
+======================END=================
+
+Java class level vs. instance level locking 
+
+In this post I am going to explain the difference between the 2 following method definitions
+
+public static void synchronized f() {… } and
+
+public void synchronized f() {… }
+The first method is an example of class level locking whereas the second one is an example of instance level locking. Suppose you have a class like the following:
+
+
+class DemoClass{
+public static synchronized void foo1(){
+try {
+Thread.sleep(5000); // 5 seconds
+} catch (InterruptedException e) {
+e.printStackTrace();
+} 
+System.out.println("class level");
+}
+public synchronized void foo2(){
+try {
+Thread.sleep(5000); // 5 seconds
+} catch (InterruptedException e) {
+e.printStackTrace();
+}
+System.out.println("instance level");
+}
+}
+Now suppose we have 2 objects of the above class and 2 threads t1 and t2 which can use the following objects:
+final DemoClass dc1 = new DemoClass();
+final DemoClass dc2 = new DemoClass();
+
+Case 1: If t1 has DemoClass.foo1() and t2 has DemoClass.foo1() then the string “class level” is printed twice in 10 seconds because foo1() is locked at the class level that means the object DemoClass.class is locked. In other words one thread has to wait for another thread to return from the function foo1().
+
+Case 2: If t1 has dc1.foo1() and t2 has dc2.foo1() then the result and explanation of case 1 holds here as well.
+
+Case 3: If t1 has dc1.foo2() and t2 has dc1.foo2() then the string “instance level” is printed twice in 10 seconds because foo2() is locked at the instance level that means the instance dc1 is locked. 
+
+Case 4: if t1 has dc1.foo2() and t2 has dc2.foo2() then the string “instance level” is printed twice in 5 seconds because foo2() is being called on 2 different instances of DemoClass which are dc1 and dc2 so they don’t interfere with each other.
+
+
+=====================================================================================================
+
+Design own custom hashmap in java : -
+
+http://tekmarathon.com/2013/03/11/creating-our-own-hashmap-in-java/
+
+====================================================================
+When to use ArrayList and LinkedList in java
+
+These two data structures(DS) operate exactly opposite in terms of read and write operations.
+ArrayList: this is build from a basic array
+
+read operation complexity: O(1)
+This is always constant because we query for an element based on index and hence there is no search involved to reach to the required element.
+
+write operation: O(n)
+Any modifications will lead to the shift of elements in an array completely, it first creates new array with new size inserts elements prior to the position of element to be inserted, then inserts the current element and inserts remaining elements after it.
+Ex: If we wanna add element at 1st position then we need to shift all elements 1 position to the right and then insert element at first position
+Linked List: This is build from double linked list
+
+read operation: O(n):
+Since the traversal of this data structure is based on links we need to traverse from starting position till the point we encounter the element that we are searching for, since in BIG-O notation time complexity is worst case scenario, if the element we are looking for is at last position then read operation complexity will be proportional to the length of the DS, hence O(n)
+
+write operation: O(1):
+Just by changing the links we would be able to insert the element at any position at any place in the DS which consumes same time
+
+source : - http://tekmarathon.com/2012/10/08/when-to-use-arraylist-and-linkedlist/ collection of good java resources.
+===========================================================
+
+How Polymorphism is implemented in java ? 
+
+Answer is here :- https://wikis.oracle.com/display/HotSpotInternals/VirtualCalls
+
+==============================================================
+
+escape of this 
+ answer is here  : - http://stackoverflow.com/questions/20474521/allowing-the-this-reference-to-escape
+
+
+Very good answer when to use Interface and when to use Abstract class :- 
+
+Here is answer and supporting link :- msdn.microsoft.com/en-us/library/scsyfw1d(v=vs.71).aspx
+
+Recommendations for Abstract Classes vs. Interfaces
+Visual Studio .NET 2003
+184 out of 224 rated this helpful - Rate this topic
+
+The choice of whether to design your functionality as an interface or an abstract class (a MustInherit class in Visual Basic) can sometimes be a difficult one. An abstract class is a class that cannot be instantiated, but must be inherited from. An abstract class may be fully implemented, but is more usually partially implemented or not implemented at all, thereby encapsulating common functionality for inherited classes. For details, see Abstract Classes.
+
+An interface, by contrast, is a totally abstract set of members that can be thought of as defining a contract for conduct. The implementation of an interface is left completely to the developer.
+
+Both interfaces and abstract classes are useful for component interaction. If a method requires an interface as an argument, then any object that implements that interface can be used in the argument. For example:
+
+' Visual Basic
+Public Sub Spin (ByVal widget As IWidget)
+End Sub
+// C#
+public void Spin (IWidget widget)
+{}
+
+This method could accept any object that implemented IWidget as the widget argument, even though the implementations of IWidget might be quite different. Abstract classes also allow for this kind of polymorphism, but with a few caveats:
+
+    Classes may inherit from only one base class, so if you want to use abstract classes to provide polymorphism to a group of classes, they must all inherit from that class.
+    Abstract classes may also provide members that have already been implemented. Therefore, you can ensure a certain amount of identical functionality with an abstract class, but cannot with an interface.
+
+Here are some recommendations to help you to decide whether to use an interface or an abstract class to provide polymorphism for your components.
+
+    If you anticipate creating multiple versions of your component, create an abstract class. Abstract classes provide a simple and easy way to version your components. By updating the base class, all inheriting classes are automatically updated with the change. Interfaces, on the other hand, cannot be changed once created. If a new version of an interface is required, you must create a whole new interface.
+    If the functionality you are creating will be useful across a wide range of disparate objects, use an interface. Abstract classes should be used primarily for objects that are closely related, whereas interfaces are best suited for providing common functionality to unrelated classes.
+    If you are designing small, concise bits of functionality, use interfaces. If you are designing large functional units, use an abstract class.
+    If you want to provide common, implemented functionality among all implementations of your component, use an abstract class. Abstract classes allow you to partially implement your class, whereas interfaces contain no implementation for any members.
+
+
+
+
+
+
+*************** Unix Stuff ***************************************************
+When a process finishes execution, it will have an exit status to report to its parent process. Because of this last little bit of information, the process will remain in the operating system’s process table as a zombie process, indicating that it is not to be scheduled for further execution, but that it cannot be completely removed (and its process ID cannot be reused) until it has been determined that the exit status is no longer needed.
+
+When a child exits, the parent process will receive a SIGCHLD signal to indicate that one of its children has finished executing; the parent process will typically call the wait() system call at this point. That call will provide the parent with the child’s exit status, and will cause the child to be reaped, or removed from the process table.
+
+How do I see if there are zombie processes on a system?
+
+Run “ps aux” and look for a Z in the STAT column.
+
+How do I remove zombie processes from a system?
+
+Well, first you can wait. It’s possible that the parent process is intentionally leaving the process in a zombie state to ensure that future children that it may create will not receive the same pid. Or perhaps the parent is occupied, and will reap the child process momentarily.
+
+Secondly, you can send a SIGCHLD signal to the parent (“kill -s SIGCHLD <ppid>“). This will cause well-behaving parents to reap their zombie children.
+
+Finally, you can kill the parent process of the zombie. At that point, all of the parent’s children will be adopted by the init process (pid 1), which periodically runs wait() to reap any zombie children.
+
+
+Process
+
+    In computing, a process is an instance of a computer program that is being executed. It contains the program code and its current activity. Depending on the operating system (OS), a process may be made up of multiple threads of execution that execute instructions concurrently.
+
+Parent Process
+
+    In the operating system Unix, every process except process 0 (the swapper) is created when another process executes the fork() system call. The process that invoked fork is the parent process and the newly-created process is the child process. Every process (except process 0) has one parent process, but can have many child processes.
+
+    The operating system kernel identifies each process by its process identifier. Process 0 is a special process that is created when the system boots; after forking a child process (process 1), process 0 becomes the swapper process (sometimes also known as the "idle task"). Process 1, known as init, is the ancestor of every other process in the system.
+
+Child process
+
+    A child process in computing is a process created by another process (the parent process).
+
+    A child process inherits most of its attributes, such as open files, from its parent. In UNIX, a child process is in fact created (using fork) as a copy of the parent. The child process can then overlay itself with a different program (using exec) as required.
+
+    Each process may create many child processes but will have at most one parent process; if a process does not have a parent this usually indicates that it was created directly by the kernel. In some systems, including UNIX based systems such as Linux, the very first process (called init) is started by the kernel at booting time and never terminates (see Linux startup process); other parentless processes may be launched to carry out various daemon tasks in userspace. Another way for a process to end up without a parent is if its parent dies, leaving an orphan process; but in this case it will shortly be adopted by init.
+
+    System call fork() is used to create processes. The purpose of fork() is to create a new process, which becomes the child process of the caller.
+
+Orphan Process
+
+    An orphan process is a computer process whose parent process has finished or terminated, though it remains running itself.
+
+    In a Unix-like operating system any orphaned process will be immediately adopted by the special init system process. This operation is called re-parenting and occurs automatically. Even though technically the process has the init process as its parent, it is still called an orphan process since the process that originally created it no longer exists.
+
+    A process can be orphaned unintentionally, such as when the parent process terminates or crashes. The process group mechanism in most Unix-like operation systems can be used to help protect against accidental orphaning, where in coordination with the user's shell will try to terminate all the child processes with the SIGHUP process signal, rather than letting them continue to run as orphans.
+
+    A process may also be intentionally orphaned so that it becomes detached from the user's session and left running in the background; usually to allow a long-running job to complete without further user attention, or to start an indefinitely running service. Under Unix, the latter kinds of processes are typically called daemon processes. The Unix nohup command is one means to accomplish this.
+
+Daemon Process
+
+    In Unix and other multitasking computer operating systems, a daemon is a computer program that runs as a background process, rather than being under the direct control of an interactive user. Typically daemon names end with the letter d: for example, syslogd is the daemon that implements the system logging facility and sshd is a daemon that services incoming SSH connections.
+
+    In a Unix environment, the parent process of a daemon is often, but not always, the init process. A daemon is usually created by a process forking a child process and then immediately exiting, thus causing init to adopt the child process. In addition, a daemon or the operating system typically must perform other operations, such as dissociating the process from any controlling terminal (tty). Such procedures are often implemented in various convenience routines such as daemon(3) in Unix.
+
+Daemon process is a process orphaned intentionally.
+Zombie Process
+
+    On Unix and Unix-like computer operating systems, a zombie process or defunct process is a process that has completed execution but still has an entry in the process table. This entry is still needed to allow the parent process to read its child's exit status. The term zombie process derives from the common definition of zombie — an undead person. In the term's metaphor, the child process has "died" but has not yet been "reaped". Also, unlike normal processes, the kill command has no effect on a zombie process.
+
+    When a process ends, all of the memory and resources associated with it are deallocated so they can be used by other processes. However, the process's entry in the process table remains. The parent can read the child's exit status by executing the wait system call, whereupon the zombie is removed. The wait call may be executed in sequential code, but it is commonly executed in a handler for the SIGCHLD signal, which the parent receives whenever a child has died.
+
+    After the zombie is removed, its process identifier (PID) and entry in the process table can then be reused. However, if a parent fails to call wait, the zombie will be left in the process table. In some situations this may be desirable, for example if the parent creates another child process it ensures that it will not be allocated the same PID. On modern UNIX-like systems (that comply with SUSv3 specification in this respect), the following special case applies: if the parent explicitly ignores SIGCHLD by setting its handler to SIG_IGN (rather than simply ignoring the signal by default) or has the SA_NOCLDWAIT flag set, all child exit status information will be discarded and no zombie processes will be left
+
+    A zombie process is not the same as an orphan process. An orphan process is a process that is still executing, but whose parent has died. They do not become zombie processes; instead, they are adopted by init (process ID 1), which waits on its children
+	
+	
+	
+	Object Oriented Programming - Encapsulation
+Encapsulation in Object Oriented Programming is a concept in which it enforces protecting attributes and behavior by wrapping inside a single unit(a class in Java) and restricting accessing to the inner workings of the objects based on that class.The true power of encapsulation is that the changes done to our protected code will result in bare minimal changes or no change to other parts of the application.
+
+In principle the object shouldn't reveal any thing about it's inner workings and provides only things that are necessary for other parts of the application to work.
+
+We can do this in Java by completely encapsulate a member variable or member function by declaring them as private or you can encapsulate partially by declaring them protected.
+
+Let me give an example
+
+Lets say we have a BankAccount class and we don't want other parts of the program reach in my balance and change it without going through the usual withdraw() or deposit() methods.This will cause a havoc in my program.
+
+You may ask, we are allowing to change the balance through the deposit and withdraw methods.Yes.But how can my balance updated without doing any withdraw or deposit operations.In these two methods we may be doing other things like auditing or logging, without this functionality we might not know what's happened if some thing goes wrong(like who done the transfer and how much amount or who authorized the transaction etc).
+
+To secure the data we should declare those attributes as private.We are not secretive here we are reducing the dependencies in other parts of the program.So any changes done in my program won't affect other parts of the application.
+
+package com.ramesh.domain;  
+ import java.util.Date;  
+ public class BankAccount {  
+      private String accountId;  
+      private long balance;  
+      private String accountType;  
+      private Date dateOpened;  
+      public void withdraw() {  
+           System.out.println("Inside withdraw");  
+      }  
+      public void deposit() {  
+           System.out.println("Inside deposit");  
+      }  
+      // setters and getters  
+ }  
+
+
+
+Advantages:
+
+1) Easy to change our code with new requirements without affecting other parts of the program.
+2) Easy for unit testing.
+3) Let us control who can access what.
+
+
+extreme-java.blogspot.in/2014/04/object-oriented-programming.html  // source blog
+
+
+ Injecting a prototype/Session bean into a singleton bean
+Injecting a prototype/Session bean into a singleton bean
+
+
+In Spring, most of the beans we work with are Singletons. If a singleton bean is wired with yet another singleton bean, there is absolutely no problem. But if it is wired with a bean which is of different scope, say prototype, how does it work? Here is the example:
+
+
+
+public class RequestProcessor {
+
+    private RequestValidator validator;
+
+    public void handleRequest(String requestId){
+        validator.validate(requestId);
+        // Process the request and update
+    }
+
+    public RequestValidator getValidator() {
+        return validator;
+    }
+
+    public void setValidator(RequestValidator validator) {
+        this.validator= validator;
+    }
+
+}
+
+public class RequestValidator {
+
+    private List<String> errorMessages = new ArrayList<String>();
+
+    public RequestValidator() {
+        System.out.println("Validator instance created!");
+    }
+
+    // Validates the request and populates error messages
+    public void validate(String requestId){
+
+    }
+
+    public List<String> getErrorMessages() {
+        return errorMessages;
+    }
+
+}
+
+
+And here is the spring configuration:
+
+<bean id="requestProcessor" class="com.pramati.spring.RequestProcessor">
+    <property name="validator" ref="validator"/>
+</bean>
+
+<bean id="validator" scope="prototype" class="com.pramati.spring.RequestValidator"/>
+
+
+With this configuration, it is expected that when ever I fetch requestProcessor from application context, it will be wired with a new validator as we declared the validator bean is of prototype scope. But this does not happen.
+When the application context gets initialized, it sees that requestProcessor is a singleton bean and initializes it to the context after wiring it with all the dependencies set. So from then onwards when we request context for requestProcessor, it return the same bean every time. To solve this issue, we have 2 approaches:
+
+    Lookup Method injection: For this, we have to declare the beans as follows:
+    <bean id="requestProcessor" class="com.pramati.spring.RequestProcessor">
+
+     <lookup-method name="getValidator" bean="validator"/>
+</bean>
+
+<bean id="validator" scope="prototype" class="com.pramati.spring.RequestValidator"/>
+
+The Spring Framework implements method injection by using CGLIB library to generate dynamically a subclass that overrides the method. So for the method to be overridden, we have to define that method in the class and either provide a dummy implementation for it or make it abstract. Making a method abstract implies that class also has to be made abstract which will make it difficult to unit test. So providing a dummy implementation is a better choice.
+Whenever we define a bean with lookup methods, Spring creates a subclass of the bean and overrides those methods which are marked as lookup-methods. And this subclassed bean gets registered into the context. The subclass delegates all the non-lookup methods to the original class. For the lookup methods, it overrides the implementation. So in our example, when getValidator() is called, it returns a new validator instance.
+We can roughly imagine our new subclass(registered in container) like this:
+
+requestProcessor = new RequestProcessor(){
+    public RequestValidator getValidator(){
+        return context.getBean("validator");
+    }
+};
+
+We could have directly fetched the bean from application context in RequestProcessor itself. But this would mean that the class is directly coupled to Spring framework. To do this in a cleaner way, we can use lookup injection. This puts all the spring related stuff at one place.
+
+    Scoped Proxies: This can be implemented as:
+
+<bean id="requestProcessor" class="com.pramati.spring.RequestProcessor">
+    <property name="validator" ref="validator"/>
+</bean>
+
+<bean id="validator" scope="prototype" class="com.pramati.spring.RequestValidator">
+    <!-- This instructs the container to proxy the current bean-->
+    <aop:scoped-proxy/>
+</bean>
+
+Remember, in case of look up method injection, proxy is created for singleton bean. But in case of scoped proxies, proxy is created for prototype bean and wired into the singleton bean during the process of registering the singleton bean in the context. The proxy thus created understands the scope and returns instances based on the requirements of the scope. So in our case, requestProcessor holds a reference to proxy in place of validator.
+And in case of lookup method injection, when requestProcessor gets loaded into the context, validator will not be initialized at all. And when we call the look up method, it returns the prototype bean. But instead of calling the method, if you try to directly access the prototype bean(assuming it is accessible), it gives a Nullpointer Exception as it didn’t get initialized(We are not wiring it using property tag of bean)
+In case of this, we can also configure how a proxy can be created. It can be done in 2 ways
+
+    CGLIB library which directly subclasses the object. This is the default option of Spring. For this, we must have CGLIB library our class path.
+    Java Dynamic Proxies. For this to be activated, we have to call:
+
+
+<aop:scoped-proxy proxy-target-class="false"/>
+
+Here in this case, we don’t need any additional libraries in our class path. But the scoped bean must implement at least one interface and it has to be referred through the same interface at all places in order to get itself wired.
+
+Few points to note:
+1. Both method injection and scoped proxies work not only for prototype beans. This works more generic. Whenever a bean of different scope is injected into a singleton bean, we can use any of these techniques to ensure that we get a corresponding scope object.
+2. Note that in the proxy, the method returning the prototype bean is overridden to return a new instance for every single call.
+Suppose we want to display the error messages that we have got after validation:
+
+requestProcessor.getValidator().validate();
+for(String message: requestProcessor.getValidator().getErrorMessages()){
+    logger.log(LogLevel.ERROR, message);
+}
+
+This code seems to print the error messages we have got after validation process. But this will never print any error messages even if there are many validation failures. This happens because requestProcessor.getValidator() returns a new validator instance every time it is called. So for this to work, the code has to be modified as:
+
+RequestValidator validator = requestProcessor.getValidator();
+validator.validate();
+for(String message: validator.getErrorMessages()){
+    logger.log(LogLevel.ERROR, message);
+}
+
+This happens only in case of prototype beans but works perfectly in case of other non-singleton scopes(request, session, global-session).
+
+The singleton scope
+When a bean is a singleton, only one shared instance of the bean will be managed, and all requests for beans with an id or ids matching that bean definition will result in that one specific bean instance being returned by the Spring container.
+To put it another way, when you define a bean definition and it is scoped as a singleton, then the Spring IoC container will create exactly one instance of the object defined by that bean definition. This single instance will be stored in a cache of such singleton beans, and all subsequent requests and references for that named bean will result in the cached object being returned.
+
+The session scope
+With the above bean definition in place, the Spring container will create a brand new instance of the bean , for the lifetime of a single HTTP Session.
+According to Spring framework reference, a different approach needs to be followed in cases where a class which "lives longer"(singleton bean in this case) needs to be injected with another class having a comparatively shorter life-span(session-scoped bean). The approach is different for prototype & singleton scope though.
+In your XML, what we want is that the singletonBean instance should be instantiated only once, and it should be injected with sessionBean. But since sessionBean is session-scoped(which means it should be re-instantiated for every session), the configuration is ambiguous(as the dependencies are set at instantiation time and the session scoped value can change later also).
+So instead of injecting with that class, its injected with a proxy that exposes the exact same public interface as sessionBean. The container injects this proxy object into the singletonBean bean, which is unaware that this sessionBean reference is a proxy. Its specified by writing this tag in the sessionBean:
+
+<aop:scoped-proxy/>
+
+
+XML Configuration:
+
+<bean name="singletonBean" class="somepkg.SingletonBean">
+<property name="someProperty" ref="sessionBean"/>
+</bean>
+
+<bean name="sessionBean" class="somepkg.SessionBean" scope="session">
+<aop:scoped-proxy/>
+</bean>
+
+
+
+When a singletonBean instance invokes a method on the dependency-injected sessionBean object, it actually is invoking a method on the proxy. The proxy then fetches the real sessionBean object from (in this case) the HTTP Session, and delegates the method invocation onto the retrieved real sessionBean object.
+
+Singleton beans with prototype-bean dependencies
+
+Lookup Method Injection
+
+When you use singleton-scoped beans with dependencies on prototype beans, be aware that dependencies are resolved at instantiation time. Thus if you dependency-inject a prototype-scoped bean into a singleton-scoped bean, a new prototype bean is instantiated and then dependency-injected into the singleton bean. The prototype instance is the sole instance that is ever supplied to the singleton-scoped bean.
+However, suppose you want the singleton-scoped bean to acquire a new instance of the prototype-scoped bean repeatedly at runtime. You cannot dependency-inject a prototype-scoped bean into your singleton bean, because that injection occurs only once, when the Spring container is instantiating the singleton bean and resolving and injecting its dependencies.
+
+<!-- a stateful bean deployed as a prototype (non-singleton) -->
+<bean id="command" class="fiona.apple.AsyncCommand" scope="prototype">
+  <!-- inject dependencies here as required -->
+</bean>
+
+<!-- commandProcessor uses statefulCommandHelper -->
+<bean id="commandManager" class="fiona.apple.CommandManager">
+  <lookup-method name="createCommand" bean="command"/>
+</bean>
+
+
+Lookup method injection is the ability of the container to override methods on container managed beans, to return the lookup result for another named bean in the container. The lookup typically involves a prototype bean as in the scenario described in the preceding section. The Spring Framework implements this method injection by using byte code generation from the CGLIB library to generate dynamically a subclass that overrides the method.
+// http://ankursinghal86.blogspot.in/2014/07/injecting-prototypesession-bean-into.html  *** source blog
+
+Lock Stripping :-
+Synchronizing the whole map fails to take advantage of a possible optimisation because hash maps store their data in a series of separate buckets, and to lock only the portion of the map that is being accessed will give advantage. This optimization is generally called lock striping.
+
+*** Famous but caveat problem in try with finally block 
+http://www.programmerinterview.com/index.php/java-questions/will-finally-run-after-return/ 
+
+ Also, if the finally block returns a value, it will override any exception thrown in the try/catch block. Here is an example:
+
+
+public static int getANumber(){
+    try{
+        throw new NoSuchFieldException();
+    } finally {
+        return 43;
+    }
+}
+
+A return statement in the finally block is a bad idea
+
+Running the method above will return a “43? and the exception in the try block will not be thrown. This is why it is considered to be a very bad idea to have a return statement inside the finally block. 
+
+** How to design immutable class in Java..  here is few point which describe this :- 
+
+ Immutable Class Creation:-
+
+    Class must be Final to avoid the Inheritance.
+    Set the values of properties using constructor only.
+    Make the properties of the class final and private
+    Do not provide any setters for these properties.
+    If the instance fields include references to mutable objects, don't allow those objects to be changed: 
+    Don't provide methods that modify the mutable objects.
+    Don't share references to the mutable objects. Never store references to external, mutable objects passed to the constructor; if necessary, create copies, and store references to the copies. Similarly, create copies of your internal mutable objects when necessary to avoid returning the originals in your methods
+
+E.g.
+public final class FinalPersonClass {
+      private final String name;
+      private final int age;
+    
+      public FinalPersonClass(final String name, final int age) {
+            super();
+            this.name = name;
+            this.age = age;
+      }
+      public int getAge() {
+            return age;
+      }
+      public String getName() {
+            return name;
+      }
+    
+}
+All wrapper classes in java.lang are immutable – 
+String, Integer, Boolean, Character, Byte, Short, Long, Float, Double, BigDecimal, BigInteger
+Advantages of the Immutable Class
+
+     State of the immutable objects can not be changed once they are created they are automatically synchronized/thread-safe.
+    The references to the immutable objects can be easily shared or cached without having to copy or clone them as there state can not be changed ever after construction.
+    The best use of the immutable objects is as the keys of a map.
+
+ 
+******Exceptions are exceptional conditions that violate some kind of a “contract” during program execution
+
+Design Principles Every Engineer Should Follow
+
+Like in any other field there are best-practices and principles in software development as well. Every software engineer should know and follow them in order to create flexible, maintainable, robust, testable and extensible software.
+
+
+Encapsulate what varies.
+
+    Identify the aspects of your application that vary and separate them from what stays the same.
+    In other words: take the parts that vary and encapsulate them, so that later you can alter or extend the parts that vary without affecting those that don’t.
+
+Program to an interface.
+
+    Program to an interface, not an implementation.
+    In other words: use polymorphism by programming to a supertype so that the actual runtime object isn’t locked into the code.
+
+Favor composition.
+
+    Favor composition over inheritance.
+    In other words: composition lets you change behavior at runtime.
+
+Loose coupling.
+
+    Strive for loosely coupled designs between objects that interact.
+    In other words: loosely coupled designs allow you to build flexible applications that can handle change because they minimize the inter-dependency between objects.
+
+Principle of least knowledge (Law of Demeter).
+
+    Each unit (object/method) should only talk to its friends; don’t talk to strangers.
+    In other words: reduce the interactions between objects to just a few close “friends”.
+
+The Hollywood principle.
+
+    Don’t call us, we will call you.
+    In other words: allow low-level components to hook themselves into a sytem, but the high-level components determine when they are needed, and how.
+
+Single responsibility principle.
+
+    A class should have only one reason to change.
+    In other words: you should design your classes so that each has a single responsibility. When a class has multiple responsibilities, the likelihood that it will need to be changed increases.
+
+Open closed principle.
+
+    Classes should be open for extension, but closed for modification.
+    In other words: class should allow its behavior to be modified without altering its source code.
+
+Liskov substitution principle.
+
+    Derived types must be completely substitutable for their base types.
+    In other words: objects in a program should be replaceable with instances of their subtypes without altering the correctness of that program
+
+Interface segregation principle.
+
+    Clients should not be forced to depend upon interfaces that they don’t use.
+    In other words: many client-specific interfaces are better than one general-purpose interface.
+
+Dependency inversion.
+
+    Depend upon abstractions. Do not depend upon concrete classes.
+    In other words: high-level modules should not depend on low-level modules, both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions.
+	
+
+	http://docs.oracle.com/javase/7/docs/jre/api/management/extension/com/sun/management/GarbageCollectionNotificationInfo.html :- is notification  class present in Java 7 which emits the info about garbage collection. Give full detail about which gc algorithm occurred every thing.
+	
+	
+	****  spin lock :- 
+	In software engineering, a spinlock is a lock which causes a thread trying to acquire it to simply wait in a loop ("spin") while repeatedly checking if the lock is available. Since the thread remains active but is not performing a useful task, the use of such a lock is a kind of busy waiting. Once acquired, spinlocks will usually be held until they are explicitly released, although in some implementations they may be automatically released if the thread being waited on (that which holds the lock) blocks, or "goes to sleep".
+	
+	In software engineering, busy-waiting or spinning is a technique in which a process repeatedly checks to see if a condition is true, such as whether keyboard input or a lock is available. Spinning can also be used to generate an arbitrary time delay, a technique that was necessary on systems that lacked a method of waiting a specific length of time. Processor speeds vary greatly from computer to computer, especially as some processors are designed to dynamically adjust speed based on external factors, such as the load on the operating system. As such, spinning as a time delay technique often produces unpredictable or even inconsistent results unless code is implemented to determine how quickly the processor can execute a "do nothing" loop.
+
+Spinning can be a valid strategy in certain circumstances, most notably in the implementation of spinlocks within operating systems designed to run on SMP systems. In general, however, spinning is considered an anti-pattern and should be avoided,[1] as processor time that could be used to execute a different task is instead wasted on useless activity.
+	
+	
+
+A busy spin, or busy wait, is a programming technique where you repeatedly test for something and do nothing until the test passes. For example in Java:
+
+while (!someResource.IsAvailable())
+    ;
+// If you get here, you know that someResource.IsAvailable() returned true
+
+A busy spin is a primitive form of synchronization; when you leave one you know some test has passed (in the above case, someResource.IsAvailable() was once true).
+
+Usually busy spins are wasteful of CPU cycles and should be avoided, for example in Java you would typically use a synchronized block instead; your code will be “frozen” and not use CPU cycles until the situation you are waiting for is satisfied.
+
+However, synchronized blocks take a bit of setup cycles and require runtime support. If the thing you are testing is almost always satisfied, and if not satisfied will always be satisfied very soon, a busy spin may use fewer cycles than proper synchronization.
+
+http://functionspace.org/topic/129/Algorithms-for-Dining-philosophers-problem  -- good collection of tutorials
+
+
+**** Thread contention :- 
+
+Source of answer:- http://stackoverflow.com/questions/1970345/what-is-thread-contention
+
+Several answers seem to focus on lock contention, but locks are not the only resources on which contention can be experienced. Contention is simply when two threads try to access either the same resource or related resources in such a way that at least one of the contending threads runs more slowly than it would if the other thread(s) were not running.
+
+The most obvious example of contention is on a lock. If thread A has a lock and thread B wants to acquire that same lock, thread B will have to wait until thread A releases the lock.
+
+Now, this is platform-specific, but the thread may experience slowdowns even if it never has to wait for the other thread to release the lock! This is because a lock protects some kind of data, and the data itself will often be contended as well.
+
+For example, consider a thread that acquires a lock, modifies an object, then releases the lock and does some other things. If two threads are doing this, even if they never fight for the lock, the threads may run much slower than they would if only one thread was running.
+
+Why? Say each thread is running on its own core on a modern x86 CPU and the cores don't share an L2 cache. With just one thread, the object may remain in the L2 cache most of the time. With both threads running, each time one thread modifies the object, the other thread will find the data is not in its L2 cache because the other CPU invalidated the cache line. On a Pentium D, for example, this will cause the code to run at FSB speed, which is much less than L2 cache speed.
+
+Since contention can occur even if the lock doesn't itself get contended for, contention can also occur when there is no lock. For example, say your CPU supports an atomic increment of a 32-bit variable. If one thread keeps incrementing and decrementing a variable, the variable will be hot in the cache much of the time. If two threads do it, their caches will contend for ownership of the memory holding that variable, and many accesses will be slower as the cache coherency protocol operates to secure each core ownership of the cache line.
+
+Ironically, locks typically reduce contention. Why? Because without a lock, two threads could operate on the same object or collection and cause lots of contention (for example, there are lock free queues). Locks will tend to deschedule contending threads, allowing non-contending threads to run instead. If thread A holds a lock and thread B wants that same lock, the implementation can run thread C instead. If thread C doesn't need that lock, then future contention between threads A and B can be avoided for awhile. (Of course, this assumes there are other threads that could run. It won't help if the only way the system as a whole can make useful progress is by running threads that contend.)
+
+
+
+
+    A contention occurs when a thread is waiting for a resource that is not readily available; it slows the execution of your code, but can clear up over time.
+
+    A deadlock occurs when a thread is waiting for a resource that a second thread has locked, and the second thread is waiting for a resource that the first thread has locked. More than two threads can be involved in a deadlock. A deadlock never resolves itself. It often causes the whole application, or the part that is experiencing the deadlock, to halt.
+
+http://dl.acm.org/citation.cfm?id=1693489 -- good read about thread contention
+
+
+// Below are few links for excellent and full explanation about Singleton pattern :- 
+https://www.securecoding.cert.org/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects // nice collection of examples
+//http://www.oracle.com/technetwork/articles/java/singleton-1577166.html -- oracle link  must read clear all concepts
+
+
+*************************CLASS LOADERS ********************************************************************
+ Class Loaders in Java
+Yesterday I was to know about Class Loaders and I found it very interesting. I would like to share with you the same.
+
+The Class loader concept, one of the cornerstones of the Java virtual machine, describes the behaviour of converting a named class into the bits responsible for implementing that class. Because class loaders exist, the Java run time does not need to know anything about files and file systems when running Java programs.
+
+Class loaders are hierarchical. Classes are introduced into the JVM as they are referenced by name in a class that is already running in the JVM. So how is the very first class loaded? The very first class is specially loaded with the help of static main() method declared in your class. All the subsequently loaded classes are loaded by the classes, which are already loaded and running. A class loader creates a name space. All JVMs include at least one class loader that is embedded within the JVM called the primordial (or bootstrap) class loader. It is somewhat special because the virtual machine assumes that it has access to a repository of trusted classes which can be run by the VM without verification.
+
+When a new JVM instance is started , the bootstrap class loader is responsible for loading key java classes like java.lang.Object and other runtime code into memory. The runtime classes are packaged inside jre/lib/rt.jar file. We cannot find the details of the bootstrap class loader in the java language specification, since this is a native implementation. For this reason the behaviour of the bootstrap class loader will differ across JVMs.
+
+Java can change its class storage model simply by changing the set of functions that implements the class loader.
+
+Now let’s look at non-primordial class loaders. The JVM has hooks in it to allow user defined class loaders to be used in place of primordial class loader.
+
+ex : Bootstrap (primordial) Loads JDK internal classes, java.* packages. (as defined in the sun.boot.class.path system property, typically loads rt.jar and i18n.jar) and is the parent in the Class loaders hierarchy.
+
+next comes the Extensions (Loads jar files from JDK extensions directory (as defined in the java.ext.dirs system property – usually lib/ext directory of the JRE) and then System (Loads classes from system classpath (as defined by the java.class.path property, which is set by the CLASSPATH environment variable or –classpath or –cp command line options) ClassLoaders.
+
+Classes loaded by Bootstrap class loader have no visibility into classes loaded by its descendants (ie Extensions and Systems class loaders).
+
+The classes loaded by system class loader have visibility into classes loaded by its parents (ie Extensions and Bootstrap class loaders).
+
+If there were any sibling class loaders they cannot see classes loaded by each other. They can only see the classes loaded by their parent class loader. For example Sibling1 class loader cannot see classes loaded by
+Sibling2 class loader
+
+Both Sibling1 and Sibling2 class loaders have visibilty into classes loaded by their parent class loaders (eg: System, Extensions, and Bootstrap)
+
+
+Class loaders are hierarchical and use a delegation model when loading a class. Class loaders request their parent to load the class first before attempting to load it themselves. When a class loader loads a class, the child class loaders in the hierarchy will never reload the class again. Hence uniqueness is maintained. Classes loaded by a child class loader have visibility into classes loaded by its parents up the hierarchy but the reverse is not true
+
+
+Note : Two objects loaded by different class loaders are never equal even if they carry the same values, which mean a class is uniquely identified in the context of the associated class loader. This applies to singletons too, where each class loader will have its own singleton.
+
+At its simplest, a class loader creates a flat name space of class bodies that are referenced by a string name. The method definition is:
+
+Class r = loadClass(String className, boolean resolveIt);
+
+The variable className contains a string that is understood by the class loader and is used to uniquely identify a class implementation. The variable resolveIt is a flag to tell the class loader that classes referenced by this class name should be resolved (that is, any referenced class should be loaded as well).
+
+We can build our own ClassLoader by being a subclass of java.lang.ClassLoader. The only abstract method that must be implemented is loadClass().
+
+Static Class Loading :
+
+Classes are statically loaded with Java’s 'new' operator.
+
+
+class MyClass {
+ public static void main(String args[]) {
+  Car c = new Car();
+ }
+}
+
+
+
+
+A NoClassDefFoundException is thrown if a class is referenced with Java’s 'new' operator (i.e. static loading) but the runtime system cannot find the referenced class.
+
+Dynamic class loading:
+
+Dynamic loading is a technique for pro grammatically invoking the functions of a class loader at run time.
+
+we can load classes dynamically by...
+
+
+Class.forName (String className); //static method which returns a Class
+
+
+
+The above static method returns the class object associated with the class name. The string className can be supplied dynamically at run time. Unlike the static loading, the dynamic loading will decide whether to load the class Car or the class Jeep at runtime based on a properties file and/or other runtime conditions. Once the class is dynamically loaded the following method returns an instance of the loaded class. It’s just like creating a class object with no arguments.
+
+
+
+class.newInstance (); //A non-static method, which creates an instance of a class (i.e. creates an object).
+Jeep myJeep = null ;
+
+//myClassName should be read from a properties file or Constants interface.
+
+//stay away from hard coding values in your program. 
+String myClassName = "au.com.Jeep" ;
+Class vehicleClass = Class.forName(myClassName) ;
+myJeep = (Jeep) vehicleClass.newInstance();
+myJeep.setFuelCapacity(50);
+
+
+
+A ClassNotFoundException is thrown when an application tries to load in a class through its string name using the following methods but no definition for the class with the specified name could be found:
+1. The forName(..) method in class - Class.
+2. The findSystemClass(..) method in class - ClassLoader.
+3. The loadClass(..) method in class - ClassLoader.
+
+The Java virtual machine has hooks in it to allow a user-defined class loader to be used in place of the primordial one. Furthermore, since the user class loader gets first crack at the class name, the user is able to implement any number of interesting class repositories, not the least of which is HTTP servers -- which got Java off the ground in the first place.
+
+There is a cost, however, because the class loader is so powerful (for example, it can replace java.lang.Object with its own version), Java classes like applets are not allowed to instantiate their own loaders. (This is enforced by the class loader, by the way.) This column will not be useful if you are trying to do this stuff with an applet, only with an application running from the trusted class repository (such as local files). 
+
+************************************************** INNER CLASSES ********************************************************************************
+
+ Quick Review of Inner Classes in Java
+Today I was again going through SCJP Sun Certified Programmer for Java 5 Study Guide by Keithy Sierra and Bert Bates as I needed some clarification.
+
+I would like to thank authors for producing such an excellent book.
+
+I think all chapters are worth to read but I enjoyed reading Threads and Generics and Collections.
+
+For a quick go round, I would like to share some of the important features in Inner Classes in Java, that i came to know from this book.
+
+
+In Object Oriented programming, for reuse and flexibility/extensibility you need to keep your classes specialized. In other words, a class should have code only for the things an object of that particular type needs to do; any other behavior should be part of another class better suited for that job.
+
+Sometimes, though, you find yourself designing a class where you discover you need behavior that belongs in a separate, specialized class, but also needs to be intimately tied to the class you're designing.
+
+One of the key benefits of an inner class is the "special relationship" an inner class instance shares with an instance of the outer class. That "special relationship" gives code in the inner class access to members of the enclosing (outer) class, as if the inner class were part of the outer class.
+In fact, that's exactly what it means: the inner class is a part of the outer class.
+
+Let's look at each of them.
+
+
+Regular) Inner classes
+
+A normal "regular" inner class is declared inside the curly braces of another class, but outside any method or other code block.
+
+
+class MyOuter {
+   class MyInner { }
+}
+
+
+
+An inner class is a full-fledged member of the enclosing (outer) class, so it can be marked with an access modifier as well as the abstract or final modifiers. (Never both abstract and final together— remember that abstract must be sub-classed, whereas final cannot be sub classed).
+
+An inner class instance shares a special relationship with an instance of the enclosing class. This relationship gives the inner class access to all of the outer class's members, including those marked private.
+
+
+class MyOuter {
+   private int x = 7;
+
+   // inner class definition
+   class MyInner {
+      public void seeOuter() {
+         // Yes you can access the private variables of enclosing class
+         System.out.println("Outer x is " + x); 
+      }
+   } // close inner class definition
+
+} // close outer class
+
+
+
+
+To instantiate an inner class, you must have a reference to an instance of the outer class to tie to the inner class.
+An inner class instance can never stand alone without a direct relationship to an instance of the outer class.
+
+From code within the enclosing class, you can instantiate the inner class using only the name of the inner class, as follows:
+
+
+MyInner mi = new MyInner();
+
+
+
+
+From code outside the enclosing class's instance methods, you can instantiate the inner class only by using both the inner and outer class names, and a reference to the outer class as follows:
+
+
+MyOuter mo = new Myouter();
+MyOuter.MyInner inner = mo.new MyInner();
+
+
+
+or
+
+
+MyOuter.MyInner inner = new MyOuter().new MyInner();
+
+
+
+From code within the inner class, the keyword this holds a reference to the inner class instance. To reference the outer this (in other words, the instance of the outer class that this inner instance is tied to) precede the keyword this with the outer class name as follows: MyOuter.this;
+
+
+Method-local inner classes
+
+A method-local inner class is defined within a method of the enclosing class.
+
+
+class MyOuter2 {
+     private String x = "Outer2";
+
+     void doStuff() {
+        class MyInner {
+           public void seeOuter() {
+             System.out.println("Outer x is " + x);
+           } // close inner class method
+        } // close inner class definition
+      } // close outer class method doStuff()
+
+} // close outer class
+
+
+
+
+
+For the inner class(Method - Local Inner Class) to be used, you must instantiate it, and that instantiation must happen within the same method, but after the class definition code.
+
+
+class MyOuter2 {
+     private String x = "Outer2";
+     void doStuff() {
+        class MyInner {
+           public void seeOuter() {
+             System.out.println("Outer x is " + x);
+           } // close inner class method
+        } // close inner class definition
+
+        MyInner mi = new MyInner();  // This line must come
+                                     // after the class
+        mi.seeOuter();
+      } // close outer class method doStuff()
+} // close outer class
+
+
+
+In other words, no other code running in any other method—inside or outside the outer class—can ever instantiate the method-local inner class. Like regular inner class objects, the method-local inner class object shares a special relationship with the enclosing (outer) class object, and can access its private (or any other) members. However, the inner class object cannot use the local variables of the method the inner class is in unless those variables are marked final.
+
+This is bcoz the local variables of the method live on the stack, and exist only for the lifetime of the method. You already know that the scope of a local variable is limited to the method the variable is declared in. When the method ends, the stack frame is blown away and the variable is history. But even after the method completes, the inner class object created within it might still be alive on the heap if, for example, a reference to it was passed into some other code and then stored in an instance variable. Because the local variables aren't guaranteed to be alive as long as the method-local inner class object, the inner class object can't use them. Unless the local variables are marked final!
+
+The only modifiers you can apply to a method-local inner class are abstract and final. (Never both at the same time, though.)
+
+A local class declared in a static method has access to only static members of the enclosing class, since there is no associated instance of the enclosing class. If you're in a static method there is no this, so an inner class in a static method is subject to the same restrictions as the static method. In other words, no access to instance variables.
+
+Anonymous inner classes
+
+Anonymous inner classes have no name, and their type must be either a subclass of the named type or an implementer of the named interface.
+
+Type - 1 (Subclass of the named type)
+
+
+class Popcorn {
+   public void pop() {
+      System.out.println("popcorn");
+    }
+}
+class Food {
+   Popcorn p = new Popcorn() {
+     public void pop() {
+        System.out.println("anonymous popcorn");
+     }
+   };
+}
+
+
+
+Polymorphism is in play when anonymous inner classes are involved. You can only call methods on an anonymous inner class reference that are defined in the reference variable type! This is no different from any other polymorphic references, for example,
+
+
+class Horse extends Animal{
+   void buck() { }
+}
+class Animal {
+   void eat() { }
+}
+
+class Test {
+   public static void main (String[] args) {
+      Animal h = new Horse();
+      h.eat();  // Legal, class Animal has an eat() method
+      h.buck();  // Not legal! Class Animal doesn't have buck()
+   }
+}
+
+
+
+
+Type - 2 (Implementer of the specified interface type)
+
+
+interface Cookable {
+   public void cook();
+}
+class Food {
+   Cookable c = new Cookable() {
+     public void cook() {
+        System.out.println("anonymous cookable implementer");
+     }
+   };
+}
+
+
+
+Anonymous interface implementers can implement only one interface.
+
+Type - 3 (Argument defined anonymous inner classes)
+
+
+class MyWonderfulClass {
+   void go() {
+     Bar b = new Bar();
+     b.doStuff(new Foo() {
+       public void foof() {
+         System.out.println("foofy");
+       } // end foof method
+    }); // end inner class def, arg, and b.doStuff stmt.
+   } // end go()
+ } // end class
+
+ interface Foo {
+   void foof();
+ }
+ class Bar {
+   void doStuff(Foo f) {}
+ }
+
+
+
+An argument-local inner class is declared, defined, and automatically instantiated as part of a method invocation. The key to remember is that the class is being defined within a method argument, so the syntax will end the class definition with a curly brace, followed by a closing parenthesis to end the method call, followed by a semicolon to end the statement: });
+
+
+
+An anonymous inner class is always created as part of a statement; don't forget to close the statement after the class definition with a curly brace. This is a rare case in Java, a curly brace followed by a semicolon.
+
+Because of polymorphism, the only methods you can call on an anonymous inner class reference are those defined in the reference variable class (or interface), even though the anonymous class is really a subclass or implementer of the reference variable type.
+
+An anonymous inner class can extend one subclass(type-1) or implement one interface(type-2), Unlike non-anonymous classes (inner or otherwise), an anonymous inner class cannot do both. In other words, it cannot both extend a class and implement an interface, nor can it implement more than one interface.
+
+
+Static nested classes
+
+Static nested classes are inner classes marked with the static modifier.
+
+
+class BigOuter {
+   static class Nested { }
+}
+
+
+
+
+A static nested class is not an inner class, it's a top-level nested class.
+
+The class itself isn't really "static"; there's no such thing as a static class. The static modifier in this case says that the nested class is a static member of the outer class. That means it can be accessed, as with other static members, without having an instance of the outer class.
+
+Because the nested class is static, it does not share any special relationship with an instance of the outer class. In fact, you don't need an instance of the outer class to instantiate a static nested class.
+
+Instantiating a static nested class requires using both the outer and nested class names as follows:
+
+
+BigOuter.Nested n = new BigOuter.Nested();
+
+
+
+complete code ....
+
+
+class BigOuter {
+  static class Nest {void go() ( System.out.println("hi"); } }
+}
+class Broom {
+  static class B2 {void goB2() { System.out.println("hi 2"); } }
+  public static void main(String[] args) {
+    BigOuter.Nest n = new BigOuter.Nest();   // both class names
+    n.go();
+    B2 b2 = new B2();     // access the enclosed class
+    b2.goB2();
+  }
+}
+
+
+
+Which produces:
+
+hi
+hi 2
+
+
+Just as a static method does not have access to the instance variables and non-static methods of the class, a static nested class does not have access to the instance variables and non-static methods of the outer class. Look for static nested classes with code that behaves like a non static (regular inner) class.
+
+
+----------------------------------------Design LRU cache -------------------------------------------------------------------------------
+Design and Implement a Least Recently Used (LRU) Cache in Java. How will you support multi-threading?!
+
+We can implement LRU cache using two standard data structures. One is Map and another one is Queue. Since the question is to support multi threading, we will use the Map & Queue implementation from java.util.concurrent.* package. In the below example, we’re using ConcurrentHashMap and ConcurrentLinkedQueue. If you don’t need multi-threading support, you simply replace these two implementations with standard HashMap and LinkedQueue.
+How LRU works?
+
+The fundamental idea is to use a queue to maintain the FIFO and Map to sore the actual data. When we add value to the cache, there are three possibilities,
+1) If element already exists in the cache (Map)
+In this case, we’ll remove the element from the queue and add it to the beginning of the queue.
+2) If cache is full and no-room to add new values
+In this case we’re running out of capacity. The only option we have is to remove the older entry from the queue (also from Map) and add the new entry.
+3) This is the last case. Just insert the new values to both queue and Map.
+
+package com.bestinterview;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class LRUCache<K, V> {
+
+	private final int capacity;
+	private ConcurrentLinkedQueue<K> queue;
+	private ConcurrentHashMap<K, V> map;
+
+	/**
+	 * Initial capacity for the LRU Cache.
+	 * @param capacity
+	 */
+	public LRUCache(final int capacity) {
+		this.capacity = capacity;
+		this.queue	= new ConcurrentLinkedQueue<K>();
+		this.map	= new ConcurrentHashMap<K, V>(capacity);
+	}
+
+	/**
+	 * Check whether the items exists in the cache. Returns null if key doesn't exists in the cache.
+	 * @param key
+	 * @return 
+	 */
+	public V get(final K key) {
+		return map.get(key);
+	}
+	
+	/**
+	 * Add new value to the LRU Cache. If the key already exists, 
+	 * the key will be promoted to the front of the cache.
+	 * Neither the key nor the value can be null.
+	 * @param key
+	 * @param value
+	 * @throws NullPointerException
+	 */
+	public synchronized void put(final K key, final V value) {
+		if(key == null || value == null) {
+			throw new NullPointerException();
+		}
+		if (map.containsKey(key)) {
+			queue.remove(key);
+		}
+		while (queue.size() >= capacity) {
+			K expiredKey = queue.poll();
+			if (expiredKey != null) {
+				map.remove(expiredKey);
+			}
+			
+		}
+		queue.add(key);
+		map.put(key, value);
+	}
+}
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+Primitive Data Types
+
+The Java programming language is statically-typed, which means that all variables must first be declared before they can be used. This involves stating the variable's type and name, as you've already seen:
+
+int gear = 1;
+
+Doing so tells your program that a field named "gear" exists, holds numerical data, and has an initial value of "1". A variable's data type determines the values it may contain, plus the operations that may be performed on it. In addition to int, the Java programming language supports seven other primitive data types. A primitive type is predefined by the language and is named by a reserved keyword. Primitive values do not share state with other primitive values. The eight primitive data types supported by the Java programming language are:
+
+    byte: The byte data type is an 8-bit signed two's complement integer. It has a minimum value of -128 and a maximum value of 127 (inclusive). The byte data type can be useful for saving memory in large arrays, where the memory savings actually matters. They can also be used in place of int where their limits help to clarify your code; the fact that a variable's range is limited can serve as a form of documentation.
+
+    short: The short data type is a 16-bit signed two's complement integer. It has a minimum value of -32,768 and a maximum value of 32,767 (inclusive). As with byte, the same guidelines apply: you can use a short to save memory in large arrays, in situations where the memory savings actually matters.
+
+    int: By default, the int data type is a 32-bit signed two's complement integer, which has a minimum value of -231 and a maximum value of 231-1. In Java SE 8 and later, you can use the int data type to represent an unsigned 32-bit integer, which has a minimum value of 0 and a maximum value of 232-1. Use the Integer class to use int data type as an unsigned integer. See the section The Number Classes for more information. Static methods like compareUnsigned, divideUnsigned etc have been added to the Integer class to support the arithmetic operations for unsigned integers.
+
+    long: The long data type is a 64-bit two's complement integer. The signed long has a minimum value of -263 and a maximum value of 263-1. In Java SE 8 and later, you can use the long data type to represent an unsigned 64-bit long, which has a minimum value of 0 and a maximum value of 264-1. Use this data type when you need a range of values wider than those provided by int. The Long class also contains methods like compareUnsigned, divideUnsigned etc to support arithmetic operations for unsigned long.
+
+    float: The float data type is a single-precision 32-bit IEEE 754 floating point. Its range of values is beyond the scope of this discussion, but is specified in the Floating-Point Types, Formats, and Values section of the Java Language Specification. As with the recommendations for byte and short, use a float (instead of double) if you need to save memory in large arrays of floating point numbers. This data type should never be used for precise values, such as currency. For that, you will need to use the java.math.BigDecimal class instead. Numbers and Strings covers BigDecimal and other useful classes provided by the Java platform.
+
+    double: The double data type is a double-precision 64-bit IEEE 754 floating point. Its range of values is beyond the scope of this discussion, but is specified in the Floating-Point Types, Formats, and Values section of the Java Language Specification. For decimal values, this data type is generally the default choice. As mentioned above, this data type should never be used for precise values, such as currency.
+
+    boolean: The boolean data type has only two possible values: true and false. Use this data type for simple flags that track true/false conditions. This data type represents one bit of information, but its "size" isn't something that's precisely defined.
+
+    char: The char data type is a single 16-bit Unicode character. It has a minimum value of '\u0000' (or 0) and a maximum value of '\uffff' (or 65,535 inclusive).
+
+	
+	Infinite loop puzzle problem :-- (i=i++) 
+	http://stackoverflow.com/questions/3831341/why-does-this-go-into-an-infinite-loop
+	
+	This happens because the value of x doesn't get incremented at all.
+
+x = x++;
+
+is equivalent to
+
+int temp = x;
+x++;
+x = temp;
+	
+***** How can I pass a parameter to a Java Thread?
+
+class MyThread extends Thread {
+
+    private String to;
+
+    public MyThread(String to) {
+        this.to = to;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("hello " + to);
+    }
+}
+
+public static void main(String[] args) {
+    new MyThread("world!").start();
+}
+
+
+############ Can Concurrenthashmap read and update the operation done parellely ***********
+http://stackoverflow.com/questions/16105554/concurrenthashmap-read-and-write-lock -- stackoverflow answer
+
+I think javadoc answers both your questions:
+
+    Retrieval operations (including get) generally do not block, so may overlap with update operations (including put and remove). Retrievals reflect the results of the most recently completed update operations holding upon their onset. For aggregate operations such as putAll and clear, concurrent retrievals may reflect insertion or removal of only some entries.
+
+Segments are for update operations:
+
+    The allowed concurrency among update operations is guided by the optional concurrencyLevel constructor argument (default 16), which is used as a hint for internal sizing.
+
+So, in short, reads are not blocked (it is implemented as reading volatile variables). Writes could block each other if they write in the same segment
+
+*** good link for understanding CHM http://www.thinkscholar.com/concurrent-hashmap/ 	
+
+
+************************** Spring Beans related question *************************************
+Difference between singleton beans and singleton beans ??
+Ans:-  go through below link:-
+http://techienjoy.com/Spring-Singleton-GOF-Singleton-Difference.php#sc
+
+Are Spring Beans Thread Safe?
+
+No.
+
+Spring has different bean scopes (e.g. Prototype, Singleton, etc.) but all these scopes enforce is when the bean is created. For example a "prototype" scoped bean will be created each time this bean is "injected", whereas a "singleton" scoped bean will be created once and shared within the application context. There are other scopes but they just define a time span (e.g. a "scope") of when a new instance will be created.
+
+The above has little, if anything to do with being thread safe, since if several threads have access to a bean (no matter the scope), it would only depend on the design of that bean to be or not to be "thread safe".
+
+The reason I said "little, if anything" is because it might depend on the problem you are trying to solve. For example if you are concerned whether 2 or more HTTP requests may create a problem for the same bean, there is a "request" scope that will create a new instance of a bean for each HTTP request, hence you can "think" of a particular bean as being "safe" in the context of multiple HTTP requests. But it is still not truly thread safe by Spring since if several threads use this bean within the same HTTP request, it goes back to a bean design (your design of a bean backing class).
+How to Make/Design a Thread Safe "Object"?
+
+There are several ways, probably too long to list here but here are a few examples:
+
+    Design your beans immutable: for example have no setters and only use constructor arguments to create a bean. There are other ways, such as Builder pattern, etc..
+
+    Design your beans stateless: for example a bean that does something can be just a function (or several). This bean in most cases can and should be stateless, which means it does not have any state, it only does things with function arguments you provide each time (on each invocation)
+
+    Design your beans persistent: which is a special case of "immutable", but has some very nice properties. Usually is used in functional programming, where Spring (at least yet) not as useful as in imperative world, but I have used them with Scala/Spring projects.
+
+    Design your beans with locks [last resort]: I would recommend against this unless you are working on a lower level library. The reason is we (humans) are not good thinking in terms of locks. Just the way we are raised and nurtured. Everything happens in parallel without us needing to "put that rain on pause, let me get an umbrella". Computers however are all about locks when you are talking "multiple things at the same time", hence there are some of us (exceptional people) who are doing their fair share and implementing libraries based on these locks. Most of other humans can just use these libraries and worry not about concurrency
+
+	
+************** Java Garbage Collection object states ****************************************** 
+sources :- docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html
+
+Notification
+A program may request to be notified of changes in an object's reachability by registering an appropriate reference object with a reference queue at the time the reference object is created. Some time after the garbage collector determines that the reachability of the referent has changed to the value corresponding to the type of the reference, it will add the reference to the associated queue. At this point, the reference is considered to be enqueued. The program may remove references from a queue either by polling or by blocking until a reference becomes available. Reference queues are implemented by the ReferenceQueue class.
+
+The relationship between a registered reference object and its queue is one-sided. That is, a queue does not keep track of the references that are registered with it. If a registered reference becomes unreachable itself, then it will never be enqueued. It is the responsibility of the program using reference objects to ensure that the objects remain reachable for as long as the program is interested in their referents.
+
+While some programs will choose to dedicate a thread to removing reference objects from one or more queues and processing them, this is by no means necessary. A tactic that often works well is to examine a reference queue in the course of performing some other fairly-frequent action. For example, a hashtable that uses weak references to implement weak keys could poll its reference queue each time the table is accessed. This is how the WeakHashMap class works. Because the ReferenceQueue.poll method simply checks an internal data structure, this check will add little overhead to the hashtable access methods. 
+
+Reachability
+Going from strongest to weakest, the different levels of reachability reflect the life cycle of an object. They are operationally defined as follows:
+
+    An object is strongly reachable if it can be reached by some thread without traversing any reference objects. A newly-created object is strongly reachable by the thread that created it.
+    An object is softly reachable if it is not strongly reachable but can be reached by traversing a soft reference.
+    An object is weakly reachable if it is neither strongly nor softly reachable but can be reached by traversing a weak reference. When the weak references to a weakly-reachable object are cleared, the object becomes eligible for finalization.
+    An object is phantom reachable if it is neither strongly, softly, nor weakly reachable, it has been finalized, and some phantom reference refers to it.
+    Finally, an object is unreachable, and therefore eligible for reclamation, when it is not reachable in any of the above ways
+	
+Read more: http://javarevisited.blogspot.com/2014/03/difference-between-weakreference-vs-softreference-phantom-strong-reference-java.html#ixzz3eMCgG7y8
+
+http://www.ibm.com/developerworks/library/j-jtp01246/  --- must read for more understanding about soft reference and memory leaks..
+	
+##############################################################################################################################################
+
+Design connection pool in java ..... 
+
+source link :- http://www.careercup.com/question?id=17267675
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.LinkedList;
+import java.util.List;
+
+public class MyConnectionPool {
+
+	static List<Connection> pool;
+	
+	static{
+		pool=new LinkedList<Connection>();
+		for (int i = 0; i < 5; i++) {
+		
+			Connection connection = null;
+			
+			try{
+			Class.forName("org.postgresql.Driver");
+			connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/mydb", "userName","Password");
+			pool.add(connection);
+			}catch(Exception e){
+				System.out.println(e);
+			}
+			
+		}
+	}
+	
+	
+	public static Connection getConnection(){
+
+		if(pool.size()>;0){
+			return pool.remove(pool.size()-1);
+		}else{
+			throw new Error("no conn available");
+		}
+	}
+	
+	public static void returnConnection(Connection conn){
+		pool.add(conn);
+	}
+	
+	public static void main(String[] args) {
+		Connection conn = MyConnectionPool.getConnection();
+		//do something
+		MyConnectionPool.returnConnection(conn);
+	}
+	
+}
+
+Another source :- http://www.developer.com/tech/article.php/626431/Implement-a-JDBC-Connection-Pool-via-the-Object-Pool-Pattern.htm
+https://devcenter.heroku.com/articles/database-connection-pooling-with-java
+
+//ConnectionPoolManager.java
+import java.io.ObjectInputStream.GetField;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Vector;
+
+class ConnectionPoolManager {
+    static String databaseUrl = "jdbc:mysql://localhost:3306/eguard"; //This can be taken from Properties file.
+    static String userName = "root";
+    static String password = "root";
+    static final int MAX_POOL_SIZE = 2;
+    static Vector<Connection> connectionPool = new Vector<Connection>();
+    
+    private ConnectionPoolManager(){
+        //Can't be sub-classed.
+    }
+    
+    public static void main(String args[]) {
+        ConnectionPoolManager.initialize();
+    }
+    
+    private static void initialize() {
+        initializeConnectionPool();
+    }
+
+    private static void initializeConnectionPool() {
+        while(!checkIfConnectionPoolIsFull()) {
+            System.out.println("Connection Pool is NOT full. Adding new Connections to Connection Pool.");
+            
+            //Connections will be created till the pool is full, idle connectionPool configuration is not added.
+            connectionPool.addElement(addToConnectionPool());
+        }
+        System.out.println("Connection Pool is full now.");
+        
+        for(int i=0;i<MAX_POOL_SIZE+2;i++){
+            Connection conn=getConnection();
+            System.out.println(conn);
+            //returnConnection(conn);  //Uncomment this line, you will never be out of connections.
+        }
+    }
+
+    private static synchronized boolean checkIfConnectionPoolIsFull() {
+        //Check if the pool size
+        if(connectionPool.size() < MAX_POOL_SIZE) { 
+            return false; 
+        } 
+        return true; 
+    } 
+     
+    private static Connection addToConnectionPool() { 
+        Connection connection = null; 
+        try { 
+            Class.forName("com.mysql.jdbc.Driver");  //TODO: Load class only once, remove here and put before while loop. 
+            connection = DriverManager.getConnection(databaseUrl, userName, password); 
+            //System.out.println("Connection: "+connection); 
+        } catch(SQLException sqle) { 
+            System.err.println("SQLException: "+sqle); 
+            return null; 
+        } catch(ClassNotFoundException cnfe) { 
+            System.err.println("ClassNotFoundException: "+cnfe); 
+            return null; 
+        }
+        return connection;
+    }
+    public static Connection getConnection() { 
+        Connection connection = null; //Check if there is a connection available. 
+        synchronized(connectionPool) {
+            if(connectionPool.size() > 0) {
+                connection = (Connection) connectionPool.firstElement();
+                connectionPool.removeElementAt(0);
+            }
+        }
+        //Giving away the connection from the connection pool
+        return connection;
+    }
+
+    public static synchronized void returnConnection(Connection connection) {
+        //Adding the connection from the client back to the connection pool
+        synchronized(connectionPool){
+            connectionPool.addElement(connection);
+        }
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cloning of ConnectionPoolManager class is not permitted.");  
+    }
+}
+
+------------------
+//Output:
+Connection Pool is NOT full. Adding new Connections to Connection Pool.
+Connection Pool is NOT full. Adding new Connections to Connection Pool.
+Connection Pool is full now.
+com.mysql.jdbc.JDBC4Connection@14c1103
+com.mysql.jdbc.JDBC4Connection@f11404
+null
+null
+-------------------------------------------------------------------------------------------------------------------------------
+Some JDBC facts :- 
+
+Where is prepared statement precompiled, in jvm or in db? 
+http://stackoverflow.com/questions/15144893/where-is-prepared-statement-precompiled-in-jvm-or-in-db
+
+JDBC driver pre compiles the PreparedStatement to a SQL statement which involves mapping parameters from Java data type to SQL data type.
+
+Then the pre compiled statement is pooled in the Oracle database.
+
+PreparedStatement has the following advantages over normal Statement:
+
+    protection against SQL-injection attack
+    if you reuse the PreparedStatement instance in java with other parameters, JDBC driver wont need to precompile it again
+    Oracle database can reuse the pooled SQL statement
+
+But if you don't use query parameters then Statement and PreparedStatement behave the same way.
+
+http://stackoverflow.com/questions/23845383/what-does-it-mean-when-i-say-prepared-statement-is-pre-compiled
+
+When you use prepared statement(i.e pre-compiled statement), As soon as DB gets this statement, it compiles it and caches it so that it can use the last compiled statement for successive call of same statement. So it becomes pre-compiled for successive calls.
+
+You generally use prepared statement with bind variables where you provide the variables at run time. Now what happens for successive execution of prepared statements, you can provide the variables which are different from previous calls. From DB point of view, it does not have to compile the statement every time, will just insert the bind variables at rum time. So becomes faster.
+
+Other advantages of prepared statements are :-
+
+1)protection against SQL-injection attack
+
+2) Faster for successive calls of same statements
+
+How it works :-
+
+    Precompilation is done by the database. Some simpler databases don't precompile statements at all. Others might precompile it on the prepareStatement call, and yet others might do it when execute is first called on the statement, taking values of the parameters into account when compiling (creating a plan for) the statement.
+
+    Databases that do precompile statements usually cache them, so in all probability ps1 won't be compiled again. Some JDBC drivers (eg. Oracle's) even cache prepared statements, so they haven't actually closed it when ps.close() was called.
+
+    Databases generally cache statements until something evicts them from the cache.
+
+What is the purpose 'Class.forName(“MY_JDBC_DRIVER”)'?	
+http://stackoverflow.com/questions/7662902/what-is-the-purpose-class-fornamemy-jdbc-driver
+
+
+
+    As part of its(DriverManager) initialization, the DriverManager class will attempt to load the driver classes referenced in the "jdbc.drivers" system property.
+
+    Applications no longer need to explictly load JDBC drivers using Class.forName(). Existing programs which currently load JDBC drivers using Class.forName() will continue to work without modification.
+
+	
+First of: with modern JDBC drivers and a current JDK (at least Java 6) the call to Class.forName() is no longer necessary. JDBC driver classes are now located using the service provider mechanism. You should be able to simply remove that call and leave the rest of the code unchanged and it should continue to work.
+
+If you're not using a current JDK (or if you have a JDBC driver that does not have the appropriate files set up to use that mechanism) then the driver needs to be registered with the DriverManager using registerDriver. That method is usually called from the static initializer block of the actual driver class, which gets triggered when the class is first loaded, so issuing the Class.forName() ensures that the driver registers itself (if it wasn't already done).
+
+And no matter if you use Class.forName() or the new service provider mechanism, you will always need the JDBC driver on the classpath (or available via some ClassLoader at runtime, at least).
+
+tl;dr: yes, the only use of that Class.forName() call is to ensure the driver is registered. If you use a current JDK and current JDBC drivers, then this call should no longer be necesary.
+
+*********************************************************************************************************************************
+
+What are the differences between Mutex vs Semaphore? When to use mutex and when to use semaphore?
+
+Concrete understanding of Operating System concepts is required to design/develop smart applications. Our objective is to educate  the reader on these concepts and learn from other expert geeks.
+
+As per operating system terminology, mutex and semaphore are kernel resources that provide synchronization services (also called as synchronization primitives). Why do we need such synchronization primitives? Won’t be only one sufficient? To answer these questions, we need to understand few keywords. Please read the posts on atomicity and critical section. We will illustrate with examples to understand these concepts well, rather than following usual OS textual description.
+
+The producer-consumer problem:
+
+Note that the content is generalized explanation. Practical details vary with implementation.
+
+Consider the standard producer-consumer problem. Assume, we have a buffer of 4096 byte length. A producer thread collects the data and writes it to the buffer. A consumer thread processes the collected data from the buffer. Objective is, both the threads should not run at the same time.
+
+Using Mutex:
+
+A mutex provides mutual exclusion, either producer or consumer can have the key (mutex) and proceed with their work. As long as the buffer is filled by producer, the consumer needs to wait, and vice versa.
+
+At any point of time, only one thread can work with the entire buffer. The concept can be generalized using semaphore.
+
+Using Semaphore:
+
+A semaphore is a generalized mutex. In lieu of single buffer, we can split the 4 KB buffer into four 1 KB buffers (identical resources). A semaphore can be associated with these four buffers. The consumer and producer can work on different buffers at the same time.
+
+Misconception:
+
+There is an ambiguity between binary semaphore and mutex. We might have come across that a mutex is binary semaphore. But they are not! The purpose of mutex and semaphore are different. May be, due to similarity in their implementation a mutex would be referred as binary semaphore.
+
+Strictly speaking, a mutex is locking mechanism used to synchronize access to a resource. Only one task (can be a thread or process based on OS abstraction) can acquire the mutex. It means there is ownership associated with mutex, and only the owner can release the lock (mutex).
+
+Semaphore is signaling mechanism (“I am done, you can carry on” kind of signal). For example, if you are listening songs (assume it as one task) on your mobile and at the same time your friend calls you, an interrupt is triggered upon which an interrupt service routine (ISR) signals the call processing task to wakeup.
+
+General Questions:
+
+1. Can a thread acquire more than one lock (Mutex)?
+
+Yes, it is possible that a thread is in need of more than one resource, hence the locks. If any lock is not available the thread will wait (block) on the lock.
+
+2. Can a mutex be locked more than once?
+
+A mutex is a lock. Only one state (locked/unlocked) is associated with it. However, a recursive mutex can be locked more than once (POSIX complaint systems), in which a count is associated with it, yet retains only one state (locked/unlocked). The programmer must unlock the mutex as many number times as it was locked.
+
+3. What happens if a non-recursive mutex is locked more than once.
+
+Deadlock. If a thread which had already locked a mutex, tries to lock the mutex again, it will enter into the waiting list of that mutex, which results in deadlock. It is because no other thread can unlock the mutex. An operating system implementer can exercise care in identifying the owner of mutex and return if it is already locked by same thread to prevent deadlocks.
+
+4. Are binary semaphore and mutex same?
+
+No. We suggest to treat them separately, as it is explained signalling vs locking mechanisms. But a binary semaphore may experience the same critical issues (e.g. priority inversion) associated with mutex. We will cover these in later article.
+
+A programmer can prefer mutex rather than creating a semaphore with count 1.
+
+5. What is a mutex and critical section?
+
+Some operating systems use the same word critical section in the API. Usually a mutex is costly operation due to protection protocols associated with it. At last, the objective of mutex is atomic access. There are other ways to achieve atomic access like disabling interrupts which can be much faster but ruins responsiveness. The alternate API makes use of disabling interrupts.
+
+6. What are events?
+
+The semantics of mutex, semaphore, event, critical section, etc… are same. All are synchronization primitives. Based on their cost in using them they are different. We should consult the OS documentation for exact details.
+
+7. Can we acquire mutex/semaphore in an Interrupt Service Routine?
+
+An ISR will run asynchronously in the context of current running thread. It is not recommended to query (blocking call) the availability of synchronization primitives in an ISR. The ISR are meant be short, the call to mutex/semaphore may block the current running thread. However, an ISR can signal a semaphore or unlock a mutex.
+
+8. What we mean by “thread blocking on mutex/semaphore” when they are not available?
+
+Every synchronization primitive has a waiting list associated with it. When the resource is not available, the requesting thread will be moved from the running list of processor to the waiting list of the synchronization primitive. When the resource is available, the higher priority thread on the waiting list gets the resource (more precisely, it depends on the scheduling policies).
+
+9. Is it necessary that a thread must block always when resource is not available?
+
+Not necessary. If the design is sure ‘what has to be done when resource is not available‘, the thread can take up that work (a different code branch). To support application requirements the OS provides non-blocking API.
+
+For example POSIX pthread_mutex_trylock() API. When mutex is not available the function returns immediately whereas the API pthread_mutex_lock() blocks the thread till resource is available.
+
+*****************************************************************************************************************************************
+
+Difference between process and thread ?
+Answer :- 
+Processes and threads are related to each other but are fundamentally different.
+A process can be thought of as an instance of a program in execution. A process is an
+independent entity to which system resources (e.g., CPU time and memory) are allocated.
+Each process is executed in a separate address space, and one process cannot
+access the variables and data structures of another process. If a process wishes to access
+another process' resources, inter-process communications have to be used. These
+include pipes, files, sockets, and other forms.
+A thread exists within a process and shares the process' resources (including its heap
+space). Multiple threads within the same process will share the same heap space. This
+is very different from processes, which cannot directly access the memory of another
+process. Each thread still has its own registers and its own stack, but other threads can
+read and write the heap memory.
+A thread is a particular execution path of a process. When one thread modifies a process
+resource, the change is immediately visible to sibling threads.
+
+
+
+Q) Why clone and finalize method made protected in Object's class ?
+-- 	To make sure they are only called on subclass object, rather than on Object class object . Because 	Object class does not has any state to clone and does not has internal objects to unreference.
+
+******************************************************************************************************************************************
+
+###################### Thread Pool design ####################################################
+
+package org.ajeet.algorithms.designpatterns;
+ 
+import java.util.ArrayList;
+import java.util.List;
+ 
+/**
+ * A simple example of thread pool design pattern.
+ * @author aj001si
+ *
+ */
+public class ThreadPool {
+ 
+ private final List<runnable> TASK_QUEUE = new ArrayList<runnable>();
+ private final List<workerthread> WORKER_THREADS = new ArrayList<workerthread>();
+ private boolean shutdown = false;
+ 
+ public ThreadPool(int poolSize){
+    if(poolSize == 0){
+        throw new IllegalArgumentException("Pool size can't be zero.");
+     }
+    //Create a pool of worker with given size
+    for(int i=1; i &lt;= poolSize; i++){
+       WorkerThread thread = new WorkerThread("Worker thread " + i);
+       WORKER_THREADS.add(thread);
+       thread.start();
+    }
+  }
+ 
+   //Assign some work
+   public void addTask(Runnable task){
+      //Add new task in TASK_QUEUE and notify all workers that wake up new task just arrived
+      synchronized (TASK_QUEUE) {
+         TASK_QUEUE.add(task);
+         TASK_QUEUE.notifyAll();
+      }
+   }
+ 
+  //It time to shut it down
+  public void shutdown(){
+     //Set flag for all worker threads that the pool is shutting down.
+     shutdown = true;
+     //Notify all waiting threads
+     synchronized (TASK_QUEUE) {
+     TASK_QUEUE.notifyAll();
+   }
+ }
+ 
+ /**
+ * This class represents worker thread to executes tasks from TASK_QUEUE.
+ *
+ */
+   private class WorkerThread extends Thread {
+ 
+     public WorkerThread(String threadName){
+        super(threadName);
+     }
+ 
+    public void run(){
+    //Each worker will continue until client will not call shutdown or wait if task_queue is empty.
+    while (!shutdown || !TASK_QUEUE.isEmpty() ){
+       try{
+        synchronized(TASK_QUEUE){
+          Runnable task= null;
+          for (Runnable task1 : TASK_QUEUE){
+              task = task1;
+              break;
+          }
+          //Got some work
+          if (task !=null){
+          TASK_QUEUE.remove(task);
+          task.run();
+        }else {
+       //Nothing to do so it will wait for some work
+       if ( ! shutdown || ! TASK_QUEUE.isEmpty()){
+         TASK_QUEUE.wait();
+       }
+   }
+   //If this worker does not has anything to do than release resource(CPU) for others.
+   Thread.yield();
+  }
+ }catch(Exception ex){
+ ex.printStackTrace();
+ }
+ if(shutdown){
+ System.out.println(this.getName() + " bye bye !!");
+ }
+ }
+ }
+ }
+ 
+//Test client
+ public static void main(String[] args) {
+    ThreadPool pool = new ThreadPool(2);
+    pool.addTask(new Runnable() {
+         @Override
+         public void run() {
+           System.out.println("Say Hello ...First thread");
+         }
+     });
+    pool.addTask(new Runnable() {
+         @Override
+         public void run() {
+           System.out.println("Say Hello ...Second thread");
+          }
+    });
+    pool.shutdown();
+ }
+}
