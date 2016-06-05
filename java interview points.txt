@@ -4028,3 +4028,169 @@ class KeyValuePair<K, V> {
     }
  
 }
+
+java program to print even odd numbers(typical mutithreading interview question)
+
+
+public class EvenOddPrinter {
+	public static void main(String[] args) throws InterruptedException {
+		Printer _p = new Printer();
+		int max =100;
+		Thread evenThread = new Thread(new EvenThread(_p, max));
+		Thread oddThread = new Thread(new OddThread(_p, max));
+		evenThread.start();
+		oddThread.start();
+	}
+
+}
+
+class OddThread implements Runnable{
+	Printer _p;
+	int max;
+	
+	OddThread(Printer p,int max){
+		this._p = p;
+		this.max = max;
+	}
+	
+	public void run(){
+		for(int i =1;i<max;i+=2){
+			//System.out.println("odd started..."+i);
+			try {
+				_p.printOdd(i);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+class EvenThread implements Runnable{
+	Printer _p;
+	int max;
+	
+	EvenThread(Printer p,int max){
+		this._p = p;
+		this.max = max;
+		}
+		
+		
+		public void run(){
+			for(int i =2;i<max;i+=2){
+				//System.out.println("even started..."+i);
+				try {
+					_p.printEven(i);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+}
+
+class Printer {
+	boolean isOdd = false;
+	public synchronized void printEven(int i) throws InterruptedException{
+		while(!isOdd){
+			 
+				wait();
+			
+		}
+		System.out.println("even thread printing:;"+i);
+		isOdd = false;
+		notify();
+	}
+	
+	public synchronized void printOdd(int i) throws InterruptedException{
+		while(isOdd){
+			
+				wait();
+			
+			
+		}
+		System.out.println("odd thread printing:;"+i);
+		isOdd = true;
+		notify();
+		
+	}
+}
+
+public class EvenOddTest {
+
+ public static void main(String[] args) {
+
+  EvenOddPrinter printer = new EvenOddPrinter();
+
+  Thread even = new Thread(new PrintTask(printer, 100, true));
+  Thread odd = new Thread(new PrintTask(printer, 100, false));
+
+  odd.start();
+  even.start();
+ }
+
+}
+
+class PrintTask implements Runnable{
+
+ int max = 0;
+ boolean isEven = false;
+ EvenOddPrinter p = null;
+ int num = 0;
+
+ public PrintTask(EvenOddPrinter p, int max, boolean isEven) {
+  this.p = p;
+  this.max = max;
+  this.isEven = isEven;
+ }
+
+ public void run() {
+
+  num = (isEven) ? 2 : 1; 
+
+  while (num <= max) {
+
+   if (isEven){ 
+    p.printEven(num);
+   }
+   else {
+    p.printOdd(num);
+   }
+
+   num += 2;
+  }
+
+ }
+}
+
+class EvenOddPrinter {
+ boolean isOdd = false;
+
+ public synchronized void printEven(int number) {
+
+  while (!this.isOdd) {
+   try {
+    wait();
+   } catch (InterruptedException e) {
+    e.printStackTrace();
+   }
+  }
+  System.out.println("Even Number : " + number);
+  this.isOdd = false;
+  notify();
+ }
+
+ public synchronized void printOdd(int number) {
+
+  while (this.isOdd) {
+   try {
+    wait();
+   } catch (InterruptedException e) {
+    e.printStackTrace();
+   }
+  }
+  System.out.println("Odd Number : " + number);
+  this.isOdd = true;
+  notify();
+ }
+}
