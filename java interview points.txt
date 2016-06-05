@@ -116,7 +116,7 @@ Exception in thread "main" java.lang.CloneNotSupportedException: Cloning of this
 Making instance volatile ensures that mulitple threads handle the object correctly when it is being 
 initialized to the SingletonPattern class.
 
-To Understand example of volatile keyword in java letís go back to Singleton pattern in Java and see 
+To Understand example of volatile keyword in java let‚Äôs go back to Singleton pattern in Java and see 
 double checked locking in Singleton with Volatile and without volatile keyword in java.
 ------------------
 //This example is representation of Singleton Pattern discussed above
@@ -151,7 +151,7 @@ threads.
 
 =======Last point to get the same object afer De-Serialization============
 Now suppose we want the above Singleton class to be serializable. We can implement the Serializable interface 
-for the above class and be done with it. But in that case we wonít be able to protect the singleton nature 
+for the above class and be done with it. But in that case we won‚Äôt be able to protect the singleton nature 
 of the instance, such that after de-serialization there will be more than one instance of the class. 
 This can be proved as follows:
 
@@ -289,14 +289,14 @@ It is something like Sender is encrypting a Password string and sent over networ
 decrypts the same string and fetches the actual value. 
 
 
-Letís create a basic class named NonSerializableClass. 
+Let‚Äôs create a basic class named NonSerializableClass. 
 -----------------------
     package com.java.serialize;
     public class NonSerializableClass {
     }
 -----------------------
 
-Now letís try to serialize it. Hereís the code to serialize NonSerializableClass.
+Now let‚Äôs try to serialize it. Here‚Äôs the code to serialize NonSerializableClass.
 -----------------------
 import java.io.*;
 public class NonSerializableTest {
@@ -321,7 +321,7 @@ Serialization rule number 1:
 The first rule of serialization is Not all classes are serializable.
 For a class to be serialized it should implement Serializable interface. 
 
-Hereís an example of a Serializable class.
+Here‚Äôs an example of a Serializable class.
 -----------------------
     public class SerializableClass implements Serializable {
        private static final long serialVersionUID = 123L;
@@ -331,7 +331,7 @@ Hereís an example of a Serializable class.
     }
 -----------------------
 
-Now letís try to serialize this. Hereís the serialization code.
+Now let‚Äôs try to serialize this. Here‚Äôs the serialization code.
 -----------------------
     public class SerializableTest {
         public static void main(String[] args) {
@@ -364,9 +364,9 @@ Serialization works fine without throwing any exceptions. The output of the clas
 
 Serialization rule number 2:
 Only Classes implementing Serializable interface support serialization.
-OK we were able to serialize the object, now letís try to deserialize it. 
+OK we were able to serialize the object, now let‚Äôs try to deserialize it. 
 
-Hereís the source code...
+Here‚Äôs the source code...
 -----------------------
     public class DeSerializeObjectTest {
         public static void main(String[] args) {
@@ -398,9 +398,9 @@ The output is
     Deserializing Object
     Deserialization complete.  //Note: Constructor didn't get invoked while deserializing.
 
-So far so good, now letís add an attribute to the class in question. 
+So far so good, now let‚Äôs add an attribute to the class in question. 
 
-Hereís the new source...
+Here‚Äôs the new source...
 -----------------------
     public class SerializableWithParamClass implements Serializable {
         private static final long serialVersionUID = 137L;
@@ -416,7 +416,7 @@ Hereís the new source...
         }
     }
 -----------------------
-Hereís the test class code...
+Here‚Äôs the test class code...
     public class SerializableWithParamTest {
        public static void main(String[] args) {
              SerializableWithParamClass param = new SerializableWithParamClass();
@@ -477,7 +477,7 @@ The output is as follows:
 09    Deserialization complete.
 10    Ending the deserialization process.
 
-I am sure you have noticed by now the attribute serialVersionUID. Whatís the need for having this attribute? 
+I am sure you have noticed by now the attribute serialVersionUID. What‚Äôs the need for having this attribute? 
 Whenever object is serialized Java stores the java major and minor version information. Along with this it 
 also needs to store some kind of version information, something which says that I am version 1.0 of this class, 
 on addition/deletion of an attribute or method it should say that I am version 2.0. The serialVersionUID 
@@ -504,7 +504,7 @@ What does not affect SerialVersionUID?
 
 Answer from Effective java :- 
 The automatically generated value is
-affected by the classís name, the names of the interfaces it implements, and all of
+affected by the class‚Äôs name, the names of the interfaces it implements, and all of
 its public and protected members
 
 One approach is to define a fixed value for serialVersionUID as I have done. The benefit is that if we 
@@ -512,7 +512,7 @@ have serialized an object and then added new attribute/method, as the serialVers
 the deserialization process is not hindered. Java force such old serialized objects to de-serialize 
 using new source code if Version is same.
 
-Letís serialize an object of SerializableClass and then change the serialVersionUID from 123L to 124L
+Let‚Äôs serialize an object of SerializableClass and then change the serialVersionUID from 123L to 124L
 and then compile it.
 
 Now on deserializing the old object we encounter the following exception:
@@ -521,7 +521,7 @@ Now on deserializing the old object we encounter the following exception:
 stream classdesc serialVersionUID = 123, local class serialVersionUID = 124
 
 
-Now letís examine the impact of serialization on object hierarchy.
+Now let‚Äôs examine the impact of serialization on object hierarchy.
 -------------------------     
     public class A {
        private String name = null;
@@ -549,7 +549,7 @@ Now letís examine the impact of serialization on object hierarchy.
         }
     }
 
-Now letís serialize and deserialize it. Hereís the code...
+Now let‚Äôs serialize and deserialize it. Here‚Äôs the code...
 ------------------------- 
     public class InheritTest {
         public static void main(String[] args) {
@@ -618,7 +618,7 @@ The output generated is:
 13    Ending the deserialization process.
 
 Note that during deserialization, the constructor of A is invoked and the attribute value of name is null.
-Now letís try two options. Make A implement Serializable and let B continue to implement Serializable. 
+Now let‚Äôs try two options. Make A implement Serializable and let B continue to implement Serializable. 
 -------------------------     
     public class A implements Serializable{
         private String name = null;
@@ -1751,7 +1751,7 @@ this question offers. It has become very popular java interview question in almo
 level java interviews.
 
 Questions start with simple statement:
-"Have you used HashMap before" or "What is HashMap? Why do we use itì
+"Have you used HashMap before" or "What is HashMap? Why do we use it‚Äú
 Almost everybody answers this with yes and then interviewee keep talking about common facts about HashMap like 
 HashMap accept null while hashTable doesn't, HashMap is not synchronized, hashMap is fast and so on along with 
 basics like its stores key and value pairs etc.
@@ -1759,7 +1759,7 @@ This shows that person has used HashMap and quite familiar with the functionalit
 takes a sharp turn from here and next set of follow up questions gets more detailed about fundamentals involved 
 in HashMap. Interview here you and come back with questions like
 
-"Do you Know how HashMap works in Javaî or "How does get () method of HashMap works in Java"
+"Do you Know how HashMap works in Java‚Äù or "How does get () method of HashMap works in Java"
 And then you get answers like I don't bother its standard Java API, you better look code on java; I can find 
 it out in Google at any time etc.
 But some interviewee definitely answer this and will say "HashMap works on principle of hashing, we have put() 
@@ -1774,7 +1774,7 @@ But this is just start of story and going forward when depth increases a little 
 scenarios every java developers faced day by day basis. So next question would be more likely about collision 
 detection and collision resolution in Java HashMap e.g 
 
-"What will happen if two different objects have same hashCode?î
+"What will happen if two different objects have same hashCode?‚Äù
 Now from here confusion starts some time interviewer will say that since hashCode is equal objects are equal and 
 HashMap will throw exception or not store it again etc. then you might want to remind them about equals and hashCode() 
 contract that two unequal object in Java very much can have equal hashCode. Some will give up at this point and some 
@@ -1784,7 +1784,7 @@ Great this answer make sense to me though there could be some other collision re
 simplest and HashMap does follow this. See the program at the end of this article.
 
 But story does not end here and final questions interviewer ask like:
-"How will you retrieve if two different objects have same hashcode?î
+"How will you retrieve if two different objects have same hashcode?‚Äù
 Hmmmmmmmmmmm
 Interviewee will say we will call get() method and then HashMap uses keys hashCode to find out bucket location and 
 retrieves object but then you need to remind him that there are two objects are stored in same bucket , so they will 
@@ -2100,9 +2100,9 @@ Java class level vs. instance level locking
 
 In this post I am going to explain the difference between the 2 following method definitions
 
-public static void synchronized f() {Ö } and
+public static void synchronized f() {‚Ä¶ } and
 
-public void synchronized f() {Ö }
+public void synchronized f() {‚Ä¶ }
 The first method is an example of class level locking whereas the second one is an example of instance level locking. Suppose you have a class like the following:
 
 
@@ -2128,13 +2128,13 @@ Now suppose we have 2 objects of the above class and 2 threads t1 and t2 which c
 final DemoClass dc1 = new DemoClass();
 final DemoClass dc2 = new DemoClass();
 
-Case 1: If t1 has DemoClass.foo1() and t2 has DemoClass.foo1() then the string ìclass levelî is printed twice in 10 seconds because foo1() is locked at the class level that means the object DemoClass.class is locked. In other words one thread has to wait for another thread to return from the function foo1().
+Case 1: If t1 has DemoClass.foo1() and t2 has DemoClass.foo1() then the string ‚Äúclass level‚Äù is printed twice in 10 seconds because foo1() is locked at the class level that means the object DemoClass.class is locked. In other words one thread has to wait for another thread to return from the function foo1().
 
 Case 2: If t1 has dc1.foo1() and t2 has dc2.foo1() then the result and explanation of case 1 holds here as well.
 
-Case 3: If t1 has dc1.foo2() and t2 has dc1.foo2() then the string ìinstance levelî is printed twice in 10 seconds because foo2() is locked at the instance level that means the instance dc1 is locked. 
+Case 3: If t1 has dc1.foo2() and t2 has dc1.foo2() then the string ‚Äúinstance level‚Äù is printed twice in 10 seconds because foo2() is locked at the instance level that means the instance dc1 is locked. 
 
-Case 4: if t1 has dc1.foo2() and t2 has dc2.foo2() then the string ìinstance levelî is printed twice in 5 seconds because foo2() is being called on 2 different instances of DemoClass which are dc1 and dc2 so they donít interfere with each other.
+Case 4: if t1 has dc1.foo2() and t2 has dc2.foo2() then the string ‚Äúinstance level‚Äù is printed twice in 5 seconds because foo2() is being called on 2 different instances of DemoClass which are dc1 and dc2 so they don‚Äôt interfere with each other.
 
 
 =====================================================================================================
@@ -2215,21 +2215,21 @@ Here are some recommendations to help you to decide whether to use an interface 
 
 
 *************** Unix Stuff ***************************************************
-When a process finishes execution, it will have an exit status to report to its parent process. Because of this last little bit of information, the process will remain in the operating systemís process table as a zombie process, indicating that it is not to be scheduled for further execution, but that it cannot be completely removed (and its process ID cannot be reused) until it has been determined that the exit status is no longer needed.
+When a process finishes execution, it will have an exit status to report to its parent process. Because of this last little bit of information, the process will remain in the operating system‚Äôs process table as a zombie process, indicating that it is not to be scheduled for further execution, but that it cannot be completely removed (and its process ID cannot be reused) until it has been determined that the exit status is no longer needed.
 
-When a child exits, the parent process will receive a SIGCHLD signal to indicate that one of its children has finished executing; the parent process will typically call the wait() system call at this point. That call will provide the parent with the childís exit status, and will cause the child to be reaped, or removed from the process table.
+When a child exits, the parent process will receive a SIGCHLD signal to indicate that one of its children has finished executing; the parent process will typically call the wait() system call at this point. That call will provide the parent with the child‚Äôs exit status, and will cause the child to be reaped, or removed from the process table.
 
 How do I see if there are zombie processes on a system?
 
-Run ìps auxî and look for a Z in the STAT column.
+Run ‚Äúps aux‚Äù and look for a Z in the STAT column.
 
 How do I remove zombie processes from a system?
 
-Well, first you can wait. Itís possible that the parent process is intentionally leaving the process in a zombie state to ensure that future children that it may create will not receive the same pid. Or perhaps the parent is occupied, and will reap the child process momentarily.
+Well, first you can wait. It‚Äôs possible that the parent process is intentionally leaving the process in a zombie state to ensure that future children that it may create will not receive the same pid. Or perhaps the parent is occupied, and will reap the child process momentarily.
 
-Secondly, you can send a SIGCHLD signal to the parent (ìkill -s SIGCHLD <ppid>ì). This will cause well-behaving parents to reap their zombie children.
+Secondly, you can send a SIGCHLD signal to the parent (‚Äúkill -s SIGCHLD <ppid>‚Äú). This will cause well-behaving parents to reap their zombie children.
 
-Finally, you can kill the parent process of the zombie. At that point, all of the parentís children will be adopted by the init process (pid 1), which periodically runs wait() to reap any zombie children.
+Finally, you can kill the parent process of the zombie. At that point, all of the parent‚Äôs children will be adopted by the init process (pid 1), which periodically runs wait() to reap any zombie children.
 
 
 Process
@@ -2271,7 +2271,7 @@ Daemon Process
 Daemon process is a process orphaned intentionally.
 Zombie Process
 
-    On Unix and Unix-like computer operating systems, a zombie process or defunct process is a process that has completed execution but still has an entry in the process table. This entry is still needed to allow the parent process to read its child's exit status. The term zombie process derives from the common definition of zombie ó an undead person. In the term's metaphor, the child process has "died" but has not yet been "reaped". Also, unlike normal processes, the kill command has no effect on a zombie process.
+    On Unix and Unix-like computer operating systems, a zombie process or defunct process is a process that has completed execution but still has an entry in the process table. This entry is still needed to allow the parent process to read its child's exit status. The term zombie process derives from the common definition of zombie ‚Äî an undead person. In the term's metaphor, the child process has "died" but has not yet been "reaped". Also, unlike normal processes, the kill command has no effect on a zombie process.
 
     When a process ends, all of the memory and resources associated with it are deallocated so they can be used by other processes. However, the process's entry in the process table remains. The parent can read the child's exit status by executing the wait system call, whereupon the zombie is removed. The wait call may be executed in sequential code, but it is commonly executed in a handler for the SIGCHLD signal, which the parent receives whenever a child has died.
 
@@ -2415,7 +2415,7 @@ We could have directly fetched the bean from application context in RequestProce
 </bean>
 
 Remember, in case of look up method injection, proxy is created for singleton bean. But in case of scoped proxies, proxy is created for prototype bean and wired into the singleton bean during the process of registering the singleton bean in the context. The proxy thus created understands the scope and returns instances based on the requirements of the scope. So in our case, requestProcessor holds a reference to proxy in place of validator.
-And in case of lookup method injection, when requestProcessor gets loaded into the context, validator will not be initialized at all. And when we call the look up method, it returns the prototype bean. But instead of calling the method, if you try to directly access the prototype bean(assuming it is accessible), it gives a Nullpointer Exception as it didnít get initialized(We are not wiring it using property tag of bean)
+And in case of lookup method injection, when requestProcessor gets loaded into the context, validator will not be initialized at all. And when we call the look up method, it returns the prototype bean. But instead of calling the method, if you try to directly access the prototype bean(assuming it is accessible), it gives a Nullpointer Exception as it didn‚Äôt get initialized(We are not wiring it using property tag of bean)
 In case of this, we can also configure how a proxy can be created. It can be done in 2 ways
 
     CGLIB library which directly subclasses the object. This is the default option of Spring. For this, we must have CGLIB library our class path.
@@ -2424,7 +2424,7 @@ In case of this, we can also configure how a proxy can be created. It can be don
 
 <aop:scoped-proxy proxy-target-class="false"/>
 
-Here in this case, we donít need any additional libraries in our class path. But the scoped bean must implement at least one interface and it has to be referred through the same interface at all places in order to get itself wired.
+Here in this case, we don‚Äôt need any additional libraries in our class path. But the scoped bean must implement at least one interface and it has to be referred through the same interface at all places in order to get itself wired.
 
 Few points to note:
 1. Both method injection and scoped proxies work not only for prototype beans. This works more generic. Whenever a bean of different scope is injected into a singleton bean, we can use any of these techniques to ensure that we get a corresponding scope object.
@@ -2513,7 +2513,7 @@ public static int getANumber(){
 
 A return statement in the finally block is a bad idea
 
-Running the method above will return a ì43? and the exception in the try block will not be thrown. This is why it is considered to be a very bad idea to have a return statement inside the finally block. 
+Running the method above will return a ‚Äú43? and the exception in the try block will not be thrown. This is why it is considered to be a very bad idea to have a return statement inside the finally block. 
 
 ** How to design immutable class in Java..  here is few point which describe this :- 
 
@@ -2545,7 +2545,7 @@ public final class FinalPersonClass {
       }
     
 }
-All wrapper classes in java.lang are immutable ñ 
+All wrapper classes in java.lang are immutable ‚Äì 
 String, Integer, Boolean, Character, Byte, Short, Long, Float, Double, BigDecimal, BigInteger
 Advantages of the Immutable Class
 
@@ -2554,7 +2554,7 @@ Advantages of the Immutable Class
     The best use of the immutable objects is as the keys of a map.
 
  
-******Exceptions are exceptional conditions that violate some kind of a ìcontractî during program execution
+******Exceptions are exceptional conditions that violate some kind of a ‚Äúcontract‚Äù during program execution
 
 Design Principles Every Engineer Should Follow
 
@@ -2564,12 +2564,12 @@ Like in any other field there are best-practices and principles in software deve
 Encapsulate what varies.
 
     Identify the aspects of your application that vary and separate them from what stays the same.
-    In other words: take the parts that vary and encapsulate them, so that later you can alter or extend the parts that vary without affecting those that donít.
+    In other words: take the parts that vary and encapsulate them, so that later you can alter or extend the parts that vary without affecting those that don‚Äôt.
 
 Program to an interface.
 
     Program to an interface, not an implementation.
-    In other words: use polymorphism by programming to a supertype so that the actual runtime object isnít locked into the code.
+    In other words: use polymorphism by programming to a supertype so that the actual runtime object isn‚Äôt locked into the code.
 
 Favor composition.
 
@@ -2583,12 +2583,12 @@ Loose coupling.
 
 Principle of least knowledge (Law of Demeter).
 
-    Each unit (object/method) should only talk to its friends; donít talk to strangers.
-    In other words: reduce the interactions between objects to just a few close ìfriendsî.
+    Each unit (object/method) should only talk to its friends; don‚Äôt talk to strangers.
+    In other words: reduce the interactions between objects to just a few close ‚Äúfriends‚Äù.
 
 The Hollywood principle.
 
-    Donít call us, we will call you.
+    Don‚Äôt call us, we will call you.
     In other words: allow low-level components to hook themselves into a sytem, but the high-level components determine when they are needed, and how.
 
 Single responsibility principle.
@@ -2608,7 +2608,7 @@ Liskov substitution principle.
 
 Interface segregation principle.
 
-    Clients should not be forced to depend upon interfaces that they donít use.
+    Clients should not be forced to depend upon interfaces that they don‚Äôt use.
     In other words: many client-specific interfaces are better than one general-purpose interface.
 
 Dependency inversion.
@@ -2637,7 +2637,7 @@ while (!someResource.IsAvailable())
 
 A busy spin is a primitive form of synchronization; when you leave one you know some test has passed (in the above case, someResource.IsAvailable() was once true).
 
-Usually busy spins are wasteful of CPU cycles and should be avoided, for example in Java you would typically use a synchronized block instead; your code will be ìfrozenî and not use CPU cycles until the situation you are waiting for is satisfied.
+Usually busy spins are wasteful of CPU cycles and should be avoided, for example in Java you would typically use a synchronized block instead; your code will be ‚Äúfrozen‚Äù and not use CPU cycles until the situation you are waiting for is satisfied.
 
 However, synchronized blocks take a bit of setup cycles and require runtime support. If the thing you are testing is almost always satisfied, and if not satisfied will always be satisfied very soon, a busy spin may use fewer cycles than proper synchronization.
 
@@ -2689,11 +2689,11 @@ When a new JVM instance is started , the bootstrap class loader is responsible f
 
 Java can change its class storage model simply by changing the set of functions that implements the class loader.
 
-Now letís look at non-primordial class loaders. The JVM has hooks in it to allow user defined class loaders to be used in place of primordial class loader.
+Now let‚Äôs look at non-primordial class loaders. The JVM has hooks in it to allow user defined class loaders to be used in place of primordial class loader.
 
 ex : Bootstrap (primordial) Loads JDK internal classes, java.* packages. (as defined in the sun.boot.class.path system property, typically loads rt.jar and i18n.jar) and is the parent in the Class loaders hierarchy.
 
-next comes the Extensions (Loads jar files from JDK extensions directory (as defined in the java.ext.dirs system property ñ usually lib/ext directory of the JRE) and then System (Loads classes from system classpath (as defined by the java.class.path property, which is set by the CLASSPATH environment variable or ñclasspath or ñcp command line options) ClassLoaders.
+next comes the Extensions (Loads jar files from JDK extensions directory (as defined in the java.ext.dirs system property ‚Äì usually lib/ext directory of the JRE) and then System (Loads classes from system classpath (as defined by the java.class.path property, which is set by the CLASSPATH environment variable or ‚Äìclasspath or ‚Äìcp command line options) ClassLoaders.
 
 Classes loaded by Bootstrap class loader have no visibility into classes loaded by its descendants (ie Extensions and Systems class loaders).
 
@@ -2720,7 +2720,7 @@ We can build our own ClassLoader by being a subclass of java.lang.ClassLoader. T
 
 Static Class Loading :
 
-Classes are statically loaded with Javaís 'new' operator.
+Classes are statically loaded with Java‚Äôs 'new' operator.
 
 
 class MyClass {
@@ -2732,7 +2732,7 @@ class MyClass {
 
 
 
-A NoClassDefFoundException is thrown if a class is referenced with Javaís 'new' operator (i.e. static loading) but the runtime system cannot find the referenced class.
+A NoClassDefFoundException is thrown if a class is referenced with Java‚Äôs 'new' operator (i.e. static loading) but the runtime system cannot find the referenced class.
 
 Dynamic class loading:
 
@@ -2745,7 +2745,7 @@ Class.forName (String className); //static method which returns a Class
 
 
 
-The above static method returns the class object associated with the class name. The string className can be supplied dynamically at run time. Unlike the static loading, the dynamic loading will decide whether to load the class Car or the class Jeep at runtime based on a properties file and/or other runtime conditions. Once the class is dynamically loaded the following method returns an instance of the loaded class. Itís just like creating a class object with no arguments.
+The above static method returns the class object associated with the class name. The string className can be supplied dynamically at run time. Unlike the static loading, the dynamic loading will decide whether to load the class Car or the class Jeep at runtime based on a properties file and/or other runtime conditions. Once the class is dynamically loaded the following method returns an instance of the loaded class. It‚Äôs just like creating a class object with no arguments.
 
 
 
@@ -2804,7 +2804,7 @@ class MyOuter {
 
 
 
-An inner class is a full-fledged member of the enclosing (outer) class, so it can be marked with an access modifier as well as the abstract or final modifiers. (Never both abstract and final togetheró remember that abstract must be sub-classed, whereas final cannot be sub classed).
+An inner class is a full-fledged member of the enclosing (outer) class, so it can be marked with an access modifier as well as the abstract or final modifiers. (Never both abstract and final together‚Äî remember that abstract must be sub-classed, whereas final cannot be sub classed).
 
 An inner class instance shares a special relationship with an instance of the enclosing class. This relationship gives the inner class access to all of the outer class's members, including those marked private.
 
@@ -2896,7 +2896,7 @@ class MyOuter2 {
 
 
 
-In other words, no other code running in any other methodóinside or outside the outer classócan ever instantiate the method-local inner class. Like regular inner class objects, the method-local inner class object shares a special relationship with the enclosing (outer) class object, and can access its private (or any other) members. However, the inner class object cannot use the local variables of the method the inner class is in unless those variables are marked final.
+In other words, no other code running in any other method‚Äîinside or outside the outer class‚Äîcan ever instantiate the method-local inner class. Like regular inner class objects, the method-local inner class object shares a special relationship with the enclosing (outer) class object, and can access its private (or any other) members. However, the inner class object cannot use the local variables of the method the inner class is in unless those variables are marked final.
 
 This is bcoz the local variables of the method live on the stack, and exist only for the lifetime of the method. You already know that the scope of a local variable is limited to the method the variable is declared in. When the method ends, the stack frame is blown away and the variable is history. But even after the method completes, the inner class object created within it might still be alive on the heap if, for example, a reference to it was passed into some other code and then stored in an instance variable. Because the local variables aren't guaranteed to be alive as long as the method-local inner class object, the inner class object can't use them. Unless the local variables are marked final!
 
@@ -3054,14 +3054,14 @@ Just as a static method does not have access to the instance variables and non-s
 ----------------------------------------Design LRU cache -------------------------------------------------------------------------------
 Design and Implement a Least Recently Used (LRU) Cache in Java. How will you support multi-threading?!
 
-We can implement LRU cache using two standard data structures. One is Map and another one is Queue. Since the question is to support multi threading, we will use the Map & Queue implementation from java.util.concurrent.* package. In the below example, weíre using ConcurrentHashMap and ConcurrentLinkedQueue. If you donít need multi-threading support, you simply replace these two implementations with standard HashMap and LinkedQueue.
+We can implement LRU cache using two standard data structures. One is Map and another one is Queue. Since the question is to support multi threading, we will use the Map & Queue implementation from java.util.concurrent.* package. In the below example, we‚Äôre using ConcurrentHashMap and ConcurrentLinkedQueue. If you don‚Äôt need multi-threading support, you simply replace these two implementations with standard HashMap and LinkedQueue.
 How LRU works?
 
 The fundamental idea is to use a queue to maintain the FIFO and Map to sore the actual data. When we add value to the cache, there are three possibilities,
 1) If element already exists in the cache (Map)
-In this case, weíll remove the element from the queue and add it to the beginning of the queue.
+In this case, we‚Äôll remove the element from the queue and add it to the beginning of the queue.
 2) If cache is full and no-room to add new values
-In this case weíre running out of capacity. The only option we have is to remove the older entry from the queue (also from Map) and add the new entry.
+In this case we‚Äôre running out of capacity. The only option we have is to remove the older entry from the queue (also from Map) and add the new entry.
 3) This is the last case. Just insert the new values to both queue and Map.
 
 package com.bestinterview;
@@ -3440,7 +3440,7 @@ How it works :-
 
     Databases generally cache statements until something evicts them from the cache.
 
-What is the purpose 'Class.forName(ìMY_JDBC_DRIVERî)'?	
+What is the purpose 'Class.forName(‚ÄúMY_JDBC_DRIVER‚Äù)'?	
 http://stackoverflow.com/questions/7662902/what-is-the-purpose-class-fornamemy-jdbc-driver
 
 
@@ -3464,7 +3464,7 @@ What are the differences between Mutex vs Semaphore? When to use mutex and when 
 
 Concrete understanding of Operating System concepts is required to design/develop smart applications. Our objective is to educate  the reader on these concepts and learn from other expert geeks.
 
-As per operating system terminology, mutex and semaphore are kernel resources that provide synchronization services (also called as synchronization primitives). Why do we need such synchronization primitives? Wonít be only one sufficient? To answer these questions, we need to understand few keywords. Please read the posts on atomicity and critical section. We will illustrate with examples to understand these concepts well, rather than following usual OS textual description.
+As per operating system terminology, mutex and semaphore are kernel resources that provide synchronization services (also called as synchronization primitives). Why do we need such synchronization primitives? Won‚Äôt be only one sufficient? To answer these questions, we need to understand few keywords. Please read the posts on atomicity and critical section. We will illustrate with examples to understand these concepts well, rather than following usual OS textual description.
 
 The producer-consumer problem:
 
@@ -3488,7 +3488,7 @@ There is an ambiguity between binary semaphore and mutex. We might have come acr
 
 Strictly speaking, a mutex is locking mechanism used to synchronize access to a resource. Only one task (can be a thread or process based on OS abstraction) can acquire the mutex. It means there is ownership associated with mutex, and only the owner can release the lock (mutex).
 
-Semaphore is signaling mechanism (ìI am done, you can carry onî kind of signal). For example, if you are listening songs (assume it as one task) on your mobile and at the same time your friend calls you, an interrupt is triggered upon which an interrupt service routine (ISR) signals the call processing task to wakeup.
+Semaphore is signaling mechanism (‚ÄúI am done, you can carry on‚Äù kind of signal). For example, if you are listening songs (assume it as one task) on your mobile and at the same time your friend calls you, an interrupt is triggered upon which an interrupt service routine (ISR) signals the call processing task to wakeup.
 
 General Questions:
 
@@ -3516,19 +3516,19 @@ Some operating systems use the same word critical section in the API. Usually a 
 
 6. What are events?
 
-The semantics of mutex, semaphore, event, critical section, etcÖ are same. All are synchronization primitives. Based on their cost in using them they are different. We should consult the OS documentation for exact details.
+The semantics of mutex, semaphore, event, critical section, etc‚Ä¶ are same. All are synchronization primitives. Based on their cost in using them they are different. We should consult the OS documentation for exact details.
 
 7. Can we acquire mutex/semaphore in an Interrupt Service Routine?
 
 An ISR will run asynchronously in the context of current running thread. It is not recommended to query (blocking call) the availability of synchronization primitives in an ISR. The ISR are meant be short, the call to mutex/semaphore may block the current running thread. However, an ISR can signal a semaphore or unlock a mutex.
 
-8. What we mean by ìthread blocking on mutex/semaphoreî when they are not available?
+8. What we mean by ‚Äúthread blocking on mutex/semaphore‚Äù when they are not available?
 
 Every synchronization primitive has a waiting list associated with it. When the resource is not available, the requesting thread will be moved from the running list of processor to the waiting list of the synchronization primitive. When the resource is available, the higher priority thread on the waiting list gets the resource (more precisely, it depends on the scheduling policies).
 
 9. Is it necessary that a thread must block always when resource is not available?
 
-Not necessary. If the design is sure ëwhat has to be done when resource is not availableë, the thread can take up that work (a different code branch). To support application requirements the OS provides non-blocking API.
+Not necessary. If the design is sure ‚Äòwhat has to be done when resource is not available‚Äò, the thread can take up that work (a different code branch). To support application requirements the OS provides non-blocking API.
 
 For example POSIX pthread_mutex_trylock() API. When mutex is not available the function returns immediately whereas the API pthread_mutex_lock() blocks the thread till resource is available.
 
@@ -3667,4 +3667,364 @@ public class ThreadPool {
     });
     pool.shutdown();
  }
+}
+
+Design custom linkedlist class .
+Answer:- http://crunchify.com/how-to-implement-a-linkedlist-class-from-scratch-in-java/
+
+public class CrunchifyLinkedListTest {
+	public static CrunchifyLinkedList crunchifyList;
+ 
+	public static void main(String[] args) {
+ 
+		// Default constructor - let's put "0" into head element.
+		crunchifyList = new CrunchifyLinkedList();
+ 
+		// add more elements to LinkedList
+		crunchifyList.add("1");
+		crunchifyList.add("2");
+		crunchifyList.add("3");
+		crunchifyList.add("4");
+		crunchifyList.add("5");
+ 
+		/*
+		 * Please note that primitive values can not be added into LinkedList directly. They must be converted to their
+		 * corresponding wrapper class.
+		 */
+ 
+		System.out.println("Print: crunchifyList: \t\t" + crunchifyList);
+		System.out.println(".size(): \t\t\t\t" + crunchifyList.size());
+		System.out.println(".get(3): \t\t\t\t" + crunchifyList.get(3) + " (get element at index:3 - list starts from 0)");
+		System.out.println(".remove(2): \t\t\t\t" + crunchifyList.remove(2) + " (element removed)");
+		System.out.println(".get(3): \t\t\t\t" + crunchifyList.get(3) + " (get element at index:3 - list starts from 0)");
+		System.out.println(".size(): \t\t\t\t" + crunchifyList.size());
+		System.out.println("Print again: crunchifyList: \t" + crunchifyList);
+	}
+ 
+}
+ 
+class CrunchifyLinkedList {
+ 
+	private static int counter;
+	private Node head;
+ 
+	// Default constructor
+	public CrunchifyLinkedList() {
+ 
+	}
+ 
+	// appends the specified element to the end of this list.
+	public void add(Object data) {
+ 
+		// Initialize Node only incase of 1st element
+		if (head == null) {
+			head = new Node(data);
+		}
+ 
+		Node crunchifyTemp = new Node(data);
+		Node crunchifyCurrent = head;
+ 
+		// Let's check for NPE before iterate over crunchifyCurrent
+		if (crunchifyCurrent != null) {
+ 
+			// starting at the head node, crawl to the end of the list and then add element after last node
+			while (crunchifyCurrent.getNext() != null) {
+				crunchifyCurrent = crunchifyCurrent.getNext();
+			}
+ 
+			// the last node's "next" reference set to our new node
+			crunchifyCurrent.setNext(crunchifyTemp);
+		}
+ 
+		// increment the number of elements variable
+		incrementCounter();
+	}
+ 
+	private static int getCounter() {
+		return counter;
+	}
+ 
+	private static void incrementCounter() {
+		counter++;
+	}
+ 
+	private void decrementCounter() {
+		counter--;
+	}
+ 
+	// inserts the specified element at the specified position in this list
+	public void add(Object data, int index) {
+		Node crunchifyTemp = new Node(data);
+		Node crunchifyCurrent = head;
+ 
+		// Let's check for NPE before iterate over crunchifyCurrent
+		if (crunchifyCurrent != null) {
+			// crawl to the requested index or the last element in the list, whichever comes first
+			for (int i = 0; i < index && crunchifyCurrent.getNext() != null; i++) {
+				crunchifyCurrent = crunchifyCurrent.getNext();
+			}
+		}
+ 
+		// set the new node's next-node reference to this node's next-node reference
+		crunchifyTemp.setNext(crunchifyCurrent.getNext());
+ 
+		// now set this node's next-node reference to the new node
+		crunchifyCurrent.setNext(crunchifyTemp);
+ 
+		// increment the number of elements variable
+		incrementCounter();
+	}
+ 
+	public Object get(int index)
+	// returns the element at the specified position in this list.
+	{
+		// index must be 1 or higher
+		if (index <= 0)
+			return null;
+		Node crunchifyCurrent = null;
+		if (head != null) {
+			crunchifyCurrent = head.getNext();
+			for (int i = 0; i < index; i++) {
+				if (crunchifyCurrent.getNext() == null)
+					return null;
+ 
+				crunchifyCurrent = crunchifyCurrent.getNext();
+			}
+			return crunchifyCurrent.getData();
+		}
+		return crunchifyCurrent;
+ 
+	}
+ 
+	// removes the element at the specified position in this list.
+	public boolean remove(int index) {
+ 
+		// if the index is out of range, exit
+		if (index < 1 || index > size())
+			return false;
+ 
+		Node crunchifyCurrent = head;
+		if (head != null) {
+			for (int i = 0; i < index; i++) {
+				if (crunchifyCurrent.getNext() == null)
+					return false;
+ 
+				crunchifyCurrent = crunchifyCurrent.getNext();
+			}
+			crunchifyCurrent.setNext(crunchifyCurrent.getNext().getNext());
+ 
+			// decrement the number of elements variable
+			decrementCounter();
+			return true;
+ 
+		}
+		return false;
+	}
+ 
+	// returns the number of elements in this list.
+	public int size() {
+		return getCounter();
+	}
+ 
+	public String toString() {
+		String output = "";
+ 
+		if (head != null) {
+			Node crunchifyCurrent = head.getNext();
+			while (crunchifyCurrent != null) {
+				output += "[" + crunchifyCurrent.getData().toString() + "]";
+				crunchifyCurrent = crunchifyCurrent.getNext();
+			}
+ 
+		}
+		return output;
+	}
+ 
+	private class Node {
+		// reference to the next node in the chain, or null if there isn't one.
+		Node next;
+ 
+		// data carried by this node. could be of any type you need.
+		Object data;
+ 
+		// Node constructor
+		public Node(Object dataValue) {
+			next = null;
+			data = dataValue;
+		}
+ 
+		// another Node constructor if we want to specify the node to point to.
+		@SuppressWarnings("unused")
+		public Node(Object dataValue, Node nextValue) {
+			next = nextValue;
+			data = dataValue;
+		}
+ 
+		// these methods should be self-explanatory
+		public Object getData() {
+			return data;
+		}
+ 
+		@SuppressWarnings("unused")
+		public void setData(Object dataValue) {
+			data = dataValue;
+		}
+ 
+		public Node getNext() {
+			return next;
+		}
+ 
+		public void setNext(Node nextValue) {
+			next = nextValue;
+		}
+ 
+	}
+}
+
+Design Custom HashMap in java:-
+
+/**
+ * The CustomHashMap uses an array of KeyValuePair.
+ * KeyValuePair class  where K is the key and V value and  next is the element appended to it. The KeyValuePair acts 
+ * as a list
+ * 
+ *  MapList is used to store elements. the getHash() method is used to find the index of the array. 
+ * 
+ * @param <K>
+ * @param <V>
+ */
+public class CustomHashMap<K, V> {
+ 
+    KeyValuePair<K, V> mapList[] = new KeyValuePair[100];
+ 
+    public V get(K key) {
+        int index = getHash(key);
+        KeyValuePair<K,V> list = mapList[index];
+        return getMatchValue(list, key);
+    }
+ 
+    public void put(K key, V value) {
+        int index = getHash(key);
+        storeValue(index, key, value);
+    }
+     
+    public void remove(K key) {
+        int index = getHash(key);
+        KeyValuePair<K,V> list = mapList[index];
+        if (list == null)
+            return;
+        // if only one element is present in the list ,set the index to null
+        if(list.getKey().equals(key)){
+            if (list.next == null){
+                mapList[index] = null;
+                return;
+            }
+        }
+        KeyValuePair<K,V> prev = null;
+        do{
+            if(list.key.equals(key)){
+                if (prev == null){
+                    list = list.getNext();
+                }else{
+                    prev.next = list.getNext();
+                }
+                break;
+            }
+            list = list.next;
+        }while(list != null);
+         
+        mapList[index] = list;
+    }
+ 
+    /*
+     * find the match value and return , if not found either throw exception or return null.
+     */
+    private V getMatchValue(KeyValuePair<K, V> list, K key) {
+        while (list != null) {
+            if (list.getKey().equals(key))
+                return list.getValue();
+            list = list.next;
+        }
+        return null;
+    }
+ 
+    private void storeValue(int index, K key, V value) {
+        KeyValuePair<K, V> list = mapList[index];
+         
+        // if list is empty , enter as first element
+        if (list == null) {
+            mapList[index] = new KeyValuePair<K, V>(key, value);
+        } else {
+            boolean done = false;
+            // traverse through list , if a key is found ,replace the value or add it at the end of the list
+            while(list.next != null) {
+                if (list.getKey().equals(key)) {
+                    list.setValue(value);
+                    done = true;
+                    break;
+                } 
+                list = list.next;
+            }
+            // add at the end of the list
+            if (!done)
+                list.next = new KeyValuePair<K, V>(key, value);
+        }
+ 
+    }
+     
+    private int getHash(K key) {
+        int hash = key.hashCode();
+        return hash % 100;
+    }
+     
+    public static void main(String args[]) {
+        CustomHashMap<Integer, Integer> map = new CustomHashMap<Integer, Integer>();
+        map.put(1, 1);
+        map.put(2, 2);
+        map.put(201,201);
+        System.out.println("get value is " + map.get(1));
+        System.out.println("get value is " + map.get(201));
+        System.out.println("get value is " + map.get(2));
+        map.remove(1);
+        System.out.println("After deletion " + map.get(1));
+        System.out.println("get value is " + map.get(201));
+    }
+ 
+}
+ 
+class KeyValuePair<K, V> {
+    K key;
+    V value;
+    KeyValuePair<K, V> next = null;
+ 
+    public KeyValuePair<K, V> getNext() {
+        return next;
+    }
+ 
+    public void setNext(KeyValuePair<K, V> next) {
+        this.next = next;
+    }
+ 
+    public KeyValuePair(K key, V value) {
+        super();
+        this.key = key;
+        this.value = value;
+    }
+ 
+    public K getKey() {
+        return key;
+    }
+ 
+    public void setKey(K key) {
+        this.key = key;
+    }
+ 
+    public V getValue() {
+        return value;
+    }
+ 
+    public void setValue(V value) {
+        this.value = value;
+    }
+ 
 }
