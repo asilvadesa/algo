@@ -4291,3 +4291,20 @@ public class Lot {
         lot1.unpark(c2);
         lot1.park(c3);
   }
+----------------------------------------------------------------------
+difference between Singleton Pattern V/S Static Classes
+http://javakwik.blogspot.in/2014/06/singleton-pattern-vs-static-classes.html
+
+Singleton Pattern V/S Static Classes
+Singleton Pattern V/S Static Classes
+
+Since Singleton & Static classes are very much similar in action e.g. both can be used without creating object and both provide only one instance, at very high level it looks that they both are intended for same task. Then why you use Singleton instead of Static classes?
+One fundamental difference between Singleton pattern and static class is that former gives you an Object while later just provide static methods. Singleton is more object oriented than static classes. With Singleton, you can use Inheritance and Polymorphism to extend a base class, implement an interface and capable of providing different implementations. For example java.lang.Runtime, which is a Singleton in Java, call to getRuntime() method return different implementations based on different JVM, but guarantees only one instance per JVM,
+
+Difference between Static Classes & Singleton:
+ Static class provides better performance than Singleton pattern, because static methods are bonded on compile time.
+ Static methods in Java cannot be overridden however you can override methods defined in Singleton class by extending it.
+ Singleton objects stored on heap while static class stored in stack.
+Overall when you need a class with full Object Oriented capability, chose Singleton, while if you just need to store bunch of static methods together, than use static class.
+
+http://javakwik.blogspot.in/2014/10/performance-tips-duing-java-coding.html
