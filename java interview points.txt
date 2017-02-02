@@ -30,6 +30,8 @@ http://www.javamadesoeasy.com/2015/02/hashmap-custom-implementation.html -- ****
 http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying  // must read
 http://www.javacamp.org/designPattern/ -- Design pattern link ... good one
 http://ashkrit.blogspot.in/2015/07/efficiency-with-algorithms.html .... high performance link...
+https://github.com/SriramKeerthi/SimpleThreadpool/blob/master/threadpool/src/main/java/com/caffinc/threadpool/SimpleThreadpool.java -- Design of simple threadpool 
+https://caffinc.github.io/2016/03/simple-threadpool/ -- Design of threadpool 
 Java interview important notes :- 
 
 Conditions of Singleton pattern:
