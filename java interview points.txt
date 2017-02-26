@@ -4310,3 +4310,60 @@ Difference between Static Classes & Singleton:
 Overall when you need a class with full Object Oriented capability, chose Singleton, while if you just need to store bunch of static methods together, than use static class.
 
 http://javakwik.blogspot.in/2014/10/performance-tips-duing-java-coding.html
+
+Do thread join without join function?
+
+/**
+ * How could you make sure that thread A ,B and C run sequentially without using join method?
+ * 
+ * @author manoj.sharma
+ * @source Barclays
+ */
+
+public class ThreadJoiningWithoutJoin {
+
+	public static void main(String[] args) {
+		final JoinTask task = new JoinTask();
+		
+		Thread A = new Thread(){
+			public void run(){
+				task.doJob(1, "JOB A DONE...");
+			}
+		};
+		
+		Thread B = new Thread(){
+			public void run(){
+				task.doJob(2, "JOB B DONE...");
+			}
+		};
+		
+		Thread C = new Thread(){
+			public void run(){
+				task.doJob(3, "JOB C DONE...");
+			}
+		};
+
+		C.start();
+		B.start();
+		A.start();
+		
+	}
+
+}
+
+// Shared Class or Object 
+class JoinTask {
+	
+	private int currentRank = 1;
+	
+	public void doJob(int rank, String msg) {
+		synchronized(this) {
+			while (rank != currentRank) {
+				try {wait();}catch(InterruptedException ex) {ex.printStackTrace();};
+			}
+			System.out.println("Job:" + currentRank + " : " + msg );
+			currentRank++;
+			notifyAll();
+		}
+	}
+}
