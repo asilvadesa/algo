@@ -4367,3 +4367,521 @@ class JoinTask {
 		}
 	}
 }
+
+---------------------- --------------------------------------------------------
+Implementation of connection pool:- 
+https://sridharrao85.wordpress.com/2011/07/20/sample-connection-pool-implementation/
+
+package com.company.connectionpool;
+import java.sql.Connection;
+import java.sql.SQLException;
+ 
+/**
+ * Interface for a basic Connection Pool.
+ */
+public interface ConnectionPool {
+ 
+    /**
+     * Gets a connection from the connection pool.
+     * 
+     * @return a valid connection from the pool.
+     */
+    Connection getConnection() throws SQLException;
+ 
+    /**
+     * Releases a connection back into the connection pool.
+     * 
+     * @param connection the connection to return to the pool
+     * @throws java.sql.SQLException
+     */
+    void releaseConnection(Connection connection) throws SQLException;
+}
+
+package com.company.connectionpool;
+ 
+/**
+ * Custom Interface for the basic Connection Pool.
+ * 
+ * @author svivaramneni
+ * @since company 1.0.0
+ */
+public interface CustomConnectionPool extends ConnectionPool {
+ 
+    /**
+     * Method to calculate number of available connections in the pool.
+     * @return number of available connections.
+     */
+    public int getNumberOfAvailableConnections();
+ 
+    /**
+     * Method to calculate number of busy connections in the pool.
+     * @return number of busy connections.
+     */
+    public int getNumberOfBusyConnections();
+ 
+    /**
+     * Method to close all the connections.
+     */
+    public void closeAllConnections();
+ 
+}
+
+package com.company.connectionpool;
+ 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+ 
+import org.apache.log4j.Logger;
+ 
+/**
+ * This class is a sample implementation of the connection pool.
+ * 
+ * @author svivaramneni
+ * @since company 1.0.0
+ */
+public class CustomConnectionPoolImpl implements Runnable, CustomConnectionPool {
+ 
+    private Logger log = Logger.getLogger(getClass());
+     
+    private String driver, url, username, password;
+    private int maxConnections;
+    private boolean waitIfBusy;
+    private List<Connection> availableConnections, busyConnections;
+    private boolean connectionPending = false;
+ 
+    public CustomConnectionPoolImpl(String driver, String url, String username,
+            String password, int initialConnections, int maxConnections,
+            boolean waitIfBusy) throws SQLException {
+ 
+        if (driver == null) {
+            throw new IllegalArgumentException("The given driver is null.");
+        }
+        if (url == null) {
+            throw new IllegalArgumentException("The given url is null.");
+        }
+        if (username == null || password == null) {
+            throw new IllegalArgumentException(
+                    "The username or password is null.");
+        }
+        if (maxConnections <= 0) {
+            throw new IllegalArgumentException(
+                    "The maximum number of connections must be greater than 0.");
+        }
+ 
+        this.driver = driver;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.maxConnections = maxConnections;
+        this.waitIfBusy = waitIfBusy;
+        if (initialConnections > maxConnections) {
+            initialConnections = maxConnections;
+        }
+        availableConnections = Collections
+                .synchronizedList(new ArrayList<Connection>(initialConnections));
+        busyConnections = Collections
+                .synchronizedList(new ArrayList<Connection>());
+        for (int i = 0; i < initialConnections; i++) {
+            availableConnections.add(makeNewConnection());
+        }
+ 
+        log.debug("available connections: " + availableConnections.size());
+    }
+ 
+    public synchronized Connection getConnection() throws SQLException {
+        if (!availableConnections.isEmpty()) {
+            int lastIndex = availableConnections.size() - 1;
+            Connection existingConnection = (Connection) availableConnections
+                    .get(lastIndex);
+            availableConnections.remove(lastIndex);
+ 
+            log.debug("available connections: " + availableConnections.size());
+ 
+            // If connection on available list is closed (e.g. it timed out),
+            // then remove it from available list and repeat the process of
+            // obtaining a connection. Also wake up threads that were waiting
+            // for a connection because maxConnection limit was reached.
+            if (existingConnection.isClosed()) {
+                notifyAll(); // Freed up a spot for anybody waiting
+                return (getConnection());
+            } else {
+                busyConnections.add(existingConnection);
+                return (existingConnection);
+            }
+        } else {
+            // Three possible cases:
+            // 1) we haven't reached maxConnections limit. So establish one in
+            // the background if there isn't already one pending, then wait for
+            // the next available connection (whether or not it was the newly
+            // established one).
+            // 2) we have reached maxConnections limit and waitIfBusy flag is
+            // false.
+            // Throw SQLException in such a case.
+            // 3) we have reached maxConnections limit and waitIfBusy flag is
+            // true.
+            // Then do the same thing as in second part of step 1: wait for next
+            // available connection.
+            if (((getNumberOfAvailableConnections() + getNumberOfBusyConnections()) < maxConnections) && !connectionPending) {
+                makeBackgroundConnection();
+            } else if (!waitIfBusy) {
+                throw new SQLException("Connection limit reached");
+            }
+ 
+            // Wait for either a new connection to be established (if you called
+            // makeBackgroundConnection) or for an existing connection to be
+            // freed up.
+            try {
+                wait();
+            } catch (InterruptedException ie) {
+            }
+ 
+            log.debug("available connections: " + availableConnections.size());
+ 
+            // Someone freed up a connection, so try again.
+            return (getConnection());
+        }
+    }
+ 
+    // we can't just make a new connection in the foreground when none are
+    // available, since this can take several seconds with a slow network
+    // connection. Instead, start a thread that establishes a new connection,
+    // then wait. You get woken up either when the new connection is established
+    // or if someone finishes with an existing connection.
+    private void makeBackgroundConnection() {
+        connectionPending = true;
+        try {
+            Thread connectThread = new Thread(this);
+            connectThread.start();
+        } catch (OutOfMemoryError oome) {
+            // Give up on new connection
+        }
+    }
+ 
+    public void run() {
+        try {
+            Connection connection = makeNewConnection();
+            synchronized (this) {
+                availableConnections.add(connection);
+                connectionPending = false;
+                notifyAll();
+            }
+        } catch (Exception e) { // SQLException or OutOfMemory
+            // Give up on new connection and wait for existing one to free up.
+        }
+    }
+ 
+    // This explicitly makes a new connection. Called in the foreground when
+    // initializing the ConnectionPoolImpl, and called in the background when
+    // running.
+    private Connection makeNewConnection() throws SQLException {
+        try {
+            // Load database driver if not already loaded
+            Class.forName(driver);
+            // Establish network connection to database
+            Connection connection = DriverManager.getConnection(url, username,
+                    password);
+            return (connection);
+        } catch (ClassNotFoundException cnfe) {
+            // Simplify try/catch blocks of people using this by throwing only
+            // one exception type.
+            throw new SQLException("Can't find class for driver: " + driver);
+        }
+    }
+ 
+    public synchronized void releaseConnection(Connection connection)
+            throws SQLException {
+        busyConnections.remove(connection);
+        availableConnections.add(connection);
+        // Wake up threads that are waiting for a connection
+        notifyAll();
+    }
+ 
+    // Closes all the connections. we need to make sure that no connections are
+    // in use before calling.  
+    public synchronized void closeAllConnections() {
+        closeConnections(availableConnections);
+        availableConnections = Collections
+                .synchronizedList(new ArrayList<Connection>());
+        closeConnections(busyConnections);
+        busyConnections = Collections
+                .synchronizedList(new ArrayList<Connection>());
+    }
+ 
+    private void closeConnections(List<Connection> connections) {
+        try {
+            for (Connection connection : connections) {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            }
+        } catch (SQLException sqle) {
+            // Ignore errors; garbage collect anyhow
+        }
+    }
+ 
+    public synchronized int getNumberOfAvailableConnections() {
+        return availableConnections.size();
+    }
+ 
+    public synchronized int getNumberOfBusyConnections() {
+        return busyConnections.size();
+    }
+ 
+    @Override
+    public synchronized String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("Class: ").append(this.getClass().getName()).append("\n");
+        result.append(" available: ").append(availableConnections.size())
+                .append("\n");
+        result.append(" busy: ").append(busyConnections.size()).append("\n");
+        result.append(" max: ").append(maxConnections).append("\n");
+        return result.toString();
+    }
+ 
+}
+
+-----------------------------------------------------------------------------------------
+How 64bit work on 32 bit os ?
+ 
+ http://eli.thegreenplace.net/2010/10/21/64-bit-types-and-arithmetic-on-32-bit-cpus
+ http://reverseengineering.stackexchange.com/questions/8454/64-bit-integers-on-32-bit-machines
+ http://stackoverflow.com/questions/22363503/will-a-long-integer-work-on-a-32-bit-system
+ 
+-----------------------------------------------------------------------------------------------
+How to make things thread safe in terms of c/c++ ? 
+
+http://stackoverflow.com/questions/5125241/how-to-make-an-application-thread-safe
+
+------------------------------------------------------------------------------------------------
+
+Define the memory area present in jvm ?  ***** Very important topic
+https://www.youtube.com/watch?v=ZBJ0u9MaKtM -- by ranjith ramchanran
+
+questions are like .. where main method get loaded ? where instance variables get initialised (on heap because it related to instance)
+local variables and all...
+
+----------------------------------------------------------------------------
+How to calculate square root of any number without using any built in function ? 
+
+https://algorithmstuff.wordpress.com/2013/06/11/square-root-of-a-number-without-using-any-library-function/
+
+#!/usr/bin/python -tt
+ 
+import sys
+ 
+def sqrt(n):
+    start = 0
+    end = n
+    m = 0
+    min_range = 0.0000000001;
+     
+    while end - start > min_range:
+        m = (start + end) / 2.0;
+        pow2 = m * m
+        if abs(pow2 - n) <= min_range:
+            return m
+        elif pow2 < n:
+            start = m
+        else:
+            end = m
+             
+    return m
+ 
+def main():
+    for line in sys.stdin:
+        n = int(line)
+        print sqrt(n)
+ 
+if __name__ == '__main__':
+    main()
+    
+ -----------------------------------------------------------------------------------------------------------------
+
+How to make parking lot application thread safe ? 
+http://stackoverflow.com/questions/41361846/java-semaphore-for-parking-lot
+
+how getSlot and exit method will work in parking lot application ?
+
+---------------------------------------------------------------------------------------------------------------------
+Excellent design pattern git hub link(java)
+https://github.com/iluwatar/java-design-patterns
+
+----------------------------------------------------------------------------------------------------------------------
+What would be output here?
+
+Integer i =null;
+int j = i;
+ o/p :-  It will throw nullpointerexception because of unboxing will happen on null object.
+ 
+ ----------------------------------------------------------------------------------------------------------------------
+ Design doubly linked list (custom) explained ... very useful site is http://www.javamadesoeasy.com/2015/01/doublylinkedlist-insert-and-delete-at.html
+ 
+ 
+ /**
+ *Exception to indicate that Doubly LinkedList is empty.
+ */
+class LinkedListEmptyException extends RuntimeException{
+       public LinkedListEmptyException(){
+         super();
+       }
+      
+     public LinkedListEmptyException(String message){
+         super(message);
+       }  
+}
+ 
+/**
+ *Node class, which holds data and contains next which points to next Node.
+ */
+class Node {
+    public int data; // data in Node.
+    public Node next; // points to next Node in list.
+    public Node previous; // points to previous Node in list.
+ 
+    /**
+     * Constructor
+     */
+    public Node(int data){
+           this.data = data;
+    }
+ 
+    /**
+     * Display Node's data
+     */
+    public void displayNode() {
+           System.out.print( data + " ");
+    }
+}
+ 
+ 
+/**
+ * Doubly LinkedList class
+ */
+class LinkedList {
+    private Node first; // ref to first link on LinkedList
+    private Node last; // ref to last link on LinkedList
+ 
+    /**
+     * Doubly LinkedList constructor
+     */
+    public LinkedList(){
+           first = null;
+    }
+  
+    
+    /**
+     * Insert New Node at first position of Doubly LinkedList
+     */
+    
+    public void insertFirst(int data){ // insert at front of list
+           Node newNode = new Node(data); // creation of new node.
+           if (first == null) // means LinkedList is empty.
+                  last = newNode; //  newNode <--- last
+           else
+                  first.previous = newNode; // newNode <-- old first
+           newNode.next = first; // newNode --> old first
+           first = newNode; // first --> newNode
+    }
+ 
+    /**
+     * Delete first node of Doubly linkedList.
+     */
+    public Node deleteFirst() { 
+                
+           if(first==null){  //means LinkedList in empty, throw exception.              
+                  throw new LinkedListEmptyException("LinkedList doesn't contain any Nodes.");
+           }
+
+           Node tempNode = first;
+           if (first.next == null) // if only one item
+                  last = null; // null <-- last
+           else
+                  first.next.previous = null; // null <-- old next
+           first = first.next; // first --> old next
+           return tempNode;
+    }
+ 
+    
+    /*
+     * Display Doubly LinkedList in forward direction
+     */
+    public void displayFrwd() {
+           System.out.print("Displaying in forward direction [first--->last] : ");
+           Node tempDisplay = first; // start at the beginning of linkedList
+           while (tempDisplay != null){ // Executes until we don't find end of list.
+                  tempDisplay.displayNode();
+                  tempDisplay = tempDisplay.next; // move to next Node
+           }
+           System.out.println("");
+    }
+ 
+ 
+    /*
+     * Display Doubly LinkedList in backward direction
+     */
+    public void displayBckwrd() {
+           System.out.print("Displaying in backward direction [last-->first] : ");
+           Node tempDisplay = last; // start at the end of linkedList
+           while (tempDisplay != null) {// Executes until we don't find start of list.    
+                  tempDisplay.displayNode();
+                  tempDisplay = tempDisplay.previous; // move to previous Node
+           }
+           System.out.println("");
+    }
+    
+ 
+}
+ 
+ 
+  
+  
+/** Copyright (c), AnkitMittal www.JavaMadeSoEasy.com */ 
+/**
+ * DoublyLinkedListInsertDeleteAtFirstExample - Main class - To test Doubly LinkedList.
+ */
+public class DoublyLinkedListInsertDeleteAtFirstExample {
+    public static void main(String[] args) {
+           LinkedList linkedList = new LinkedList(); // creation of Linked List
+           
+           linkedList.insertFirst(11);
+           linkedList.insertFirst(21);
+           linkedList.insertFirst(59);
+           linkedList.insertFirst(14);
+           linkedList.insertFirst(39);
+ 
+           linkedList.displayFrwd(); // display DoublyLinkedList
+           linkedList.displayBckwrd();
+                        
+           System.out.print("Deleted Nodes: ");
+           Node deletedNode = linkedList.deleteFirst(); //delete Node
+           deletedNode.displayNode();                                 //display deleted Node.
+           deletedNode = linkedList.deleteFirst();      //delete Node.
+           deletedNode.displayNode();                                 //display deleted Node.
+           
+           System.out.println();// sysout used to format output
+           
+           linkedList.displayFrwd(); // display DoublyLinkedList
+           linkedList.displayBckwrd();
+           
+           
+ 
+    }
+}
+ 
+/*OUTPUT
+ 
+Displaying in forward direction [first--->last] : 39 14 59 21 11
+Displaying in backward direction [last-->first] : 11 21 59 14 39
+Deleted Nodes: 39 14
+Displaying in forward direction [first--->last] : 59 21 11
+Displaying in backward direction [last-->first] : 11 21 59
+ 
+*/
+ 
+ 
+
+ 
