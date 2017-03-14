@@ -4882,6 +4882,29 @@ Displaying in backward direction [last-->first] : 11 21 59
  
 */
  
+ -----------------------------------------------------------------------------------------------------------------
+ 
+ serialisation secrets . ******************* Very important  ********* Cocept clear...
+ http://www.oracle.com/technetwork/articles/java/javaserial-1536170.html
+ http://stackoverflow.com/questions/18294326/how-to-generate-serialversionuid-programmatically-in-java
+ http://docs.oracle.com/javase/6/docs/platform/serialization/spec/class.html#4100
+ 
+
+There is a version of the serialver tool source available from OpenJDK. It all comes down to this call:
+
+ObjectStreamClass c = ObjectStreamClass.lookup(MyClass.class);
+long serialID = c.getSerialVersionUID();
+System.out.println(serialID);
+
+In JDK 6 at least it returns the same number with serialver tool.
+
+-------------------------------------------------------------------------------
+http://cscarioni.blogspot.in/2010/12/understanding-how-java-debug-works.html  
+
+How java debugger works ....
+
+http://docs.oracle.com/javase/6/docs/technotes/guides/jpda/
+ 
  
 
  
