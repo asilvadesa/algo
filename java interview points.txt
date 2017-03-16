@@ -4905,6 +4905,12 @@ How java debugger works ....
 
 http://docs.oracle.com/javase/6/docs/technotes/guides/jpda/
  
+ -------------------------------------------------------------------------------
  
+ why enums are best for singleton patten ?
+  
+  http://secretsinjava.blogspot.in/2016/08/why-enum-is-best-approach-to-implement.html **** very nice blogspot for same 
+  
+---------------------------------------------------------------------------------------
 
  
