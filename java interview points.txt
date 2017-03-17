@@ -4930,4 +4930,10 @@ http://www.devinline.com/2015/03/how-linkedhashmap-works-internally.html -- ####
 Ways to solve producer consumer problem *******
 http://www.devinline.com/search?q=producer
 
+----------------------------------------------------------------------------------------
+
+##### Garbagae collection based java snippet 
+
+http://sujithkupu.blogspot.in/2016/12/garbage-collection-question-java.html
+
  
