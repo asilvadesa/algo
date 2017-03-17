@@ -4032,7 +4032,7 @@ class KeyValuePair<K, V> {
 }
 
 java program to print even odd numbers(typical mutithreading interview question)
-
+ http://www.devinline.com/2015/10/even-and-odd-number-using-interrupt.html  ##### Print even odd based on interrupt
 
 public class EvenOddPrinter {
 	public static void main(String[] args) throws InterruptedException {
@@ -4371,6 +4371,8 @@ class JoinTask {
 ---------------------- --------------------------------------------------------
 Implementation of connection pool:- 
 https://sridharrao85.wordpress.com/2011/07/20/sample-connection-pool-implementation/
+Another great link for connection pool :- 
+https://kkarthikeyanblog.wordpress.com/
 
 package com.company.connectionpool;
 import java.sql.Connection;
@@ -4912,5 +4914,20 @@ http://docs.oracle.com/javase/6/docs/technotes/guides/jpda/
   http://secretsinjava.blogspot.in/2016/08/why-enum-is-best-approach-to-implement.html **** very nice blogspot for same 
   
 ---------------------------------------------------------------------------------------
+******** Another excellent geek java blog **********  #####Important
+http://geekrai.blogspot.in/2013/05/life-cycle-of-object-in-java.html
+http://geekrai.blogspot.in/2013/06/linkedhashmap-implementation-in-java.html
+http://sujithkupu.blogspot.in/2015/10/how-linkedhashmap-works-internally-java.html
+http://geekrai.blogspot.in/2013/12/decoding-java-bytecode.html
+
+--------------------------------------------------------------------------------------
+java mongo dba nd geek blogspot 
+http://www.thejavageek.com/2016/06/05/working-linkedhashmap-java/
+http://www.devinline.com/2015/03/how-linkedhashmap-works-internally.html -- #### To be read important blogspot 
+
+--------------------------------------------------------------------------------------
+
+Ways to solve producer consumer problem *******
+http://www.devinline.com/search?q=producer
 
  
