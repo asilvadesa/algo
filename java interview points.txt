@@ -5110,3 +5110,7 @@ Eg.
 Consider above picture. If we need rows with data less that 100 all we need are notes to the left of 100.
 
 These are just common ones. Others are R-tree indexes, bitmap indexes etc.
+
+****** System design excellent link *****
+https://geekibuti.blogspot.in
+https://tianrunhe.wordpress.com/2012/03/24/data-structure-and-algorithms-for-garbage-collection-in-c/
