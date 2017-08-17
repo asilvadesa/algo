@@ -5114,3 +5114,17 @@ These are just common ones. Others are R-tree indexes, bitmap indexes etc.
 ****** System design excellent link *****
 https://geekibuti.blogspot.in
 https://tianrunhe.wordpress.com/2012/03/24/data-structure-and-algorithms-for-garbage-collection-in-c/
+
+date:- 17-Aug-2017 ******************  
+
+Url related to concurrency and fork join pool ... excellent resources : Work stealing 
+http://www.1024cores.net/home/parallel-computing/concurrent-skip-list/work-stealing-vs-work-requesting
+https://www.igvita.com/2012/02/29/work-stealing-and-recursive-partitioning-with-fork-join/
+http://www.logicbig.com/tutorials/core-java-tutorial/java-multi-threading/fork-and-join/
+https://blog.molecular-matters.com/2015/08/24/job-system-2-0-lock-free-work-stealing-part-1-basics/
+
+
+
+
+
+
