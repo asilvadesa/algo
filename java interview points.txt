@@ -5124,7 +5124,11 @@ http://www.logicbig.com/tutorials/core-java-tutorial/java-multi-threading/fork-a
 https://blog.molecular-matters.com/2015/08/24/job-system-2-0-lock-free-work-stealing-part-1-basics/
 
 
-
+*** Design throttling in java  
+https://dzone.com/articles/ratelimiter-discovering-google
+https://jochemkuijpers.nl/blog/post/simple-java-rate-limiter 
+one more link useful howtodoinjava
+http://krishnaprasadas.blogspot.in/2012/05/throttling-algorithm.html
 
 
 
