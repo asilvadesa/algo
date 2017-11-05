@@ -5156,4 +5156,9 @@ JVM executes the static block and the Driver registers itself with the DriverMan
 In order to create the connection to the database, the DriverManager class has to know which database driver you want to use. It does that by iterating over the array of drivers that have registered with it and calls the acceptsURL(url) method on each driver in the array, effectively asking the driver to tell it whether or not it can handle the JDBC URL
 
 
+--------------------------------------------------------------------------------------
+Finding the beginning point of cycle in linkedlist
+Stack overflow question::::-- Explain how finding cycle start node in cycle linked list work?
+https://stackoverflow.com/questions/2936213/explain-how-finding-cycle-start-node-in-cycle-linked-list-work#answer-6110767
+
 
