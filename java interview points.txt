@@ -5130,5 +5130,30 @@ https://jochemkuijpers.nl/blog/post/simple-java-rate-limiter
 one more link useful howtodoinjava
 http://krishnaprasadas.blogspot.in/2012/05/throttling-algorithm.html
 
+----------------------------------------------------------------------------------------------------------
+
+In JDBC, When you do the following
+
+
+Class.forName("driver class name")
+Connection conn = DriverManager.getConnection()
+How does JVM recognizes to give the exact driver's connection object which has been loaded by Class.forNAme in the previous line ?
+
+Class.forName() will load the driver into memory, If successful, the static initializer of the driver is called.
+
+All JDBC Drivers have a static block that registers itself with DriverManager, something like below.
+
+
+static {
+    try {
+        java.sql.DriverManager.registerDriver(new Driver());
+    } catch (SQLException E) {
+        throw new RuntimeException("Can't register driver!");
+    }
+}
+JVM executes the static block and the Driver registers itself with the DriverManager.
+
+In order to create the connection to the database, the DriverManager class has to know which database driver you want to use. It does that by iterating over the array of drivers that have registered with it and calls the acceptsURL(url) method on each driver in the array, effectively asking the driver to tell it whether or not it can handle the JDBC URL
+
 
 
