@@ -5161,4 +5161,10 @@ Finding the beginning point of cycle in linkedlist
 Stack overflow question::::-- Explain how finding cycle start node in cycle linked list work?
 https://stackoverflow.com/questions/2936213/explain-how-finding-cycle-start-node-in-cycle-linked-list-work#answer-6110767
 
+*********************************************************************************************************************************
+How to choose the number of threads for a thread pool 
+https://medium.com/@sergeykuptsov/how-it-works-in-java-thread-pool-2a15dac75620
+
+
+
 
