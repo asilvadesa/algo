@@ -5165,6 +5165,130 @@ https://stackoverflow.com/questions/2936213/explain-how-finding-cycle-start-node
 How to choose the number of threads for a thread pool 
 https://medium.com/@sergeykuptsov/how-it-works-in-java-thread-pool-2a15dac75620
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+http://efectivejava.blogspot.in/search/label/Collection%20custom%20%20Iterator
+Implementing own iterator for collection 
+
+Iterator design pattern in java 
+
+Lets write an class that has method next() and hasNext() which basically are backbone for iterator design pattern 
+
+This Iterator will be iterating over a collection represented by Collection class
+
+Collection class consist of an array of elements that Iterator will be iterating over. 
+
+Additionally methods to add and remove elements from array are also available in Collection class
+
+IteratorTestor class consist of all the scenarios where in 
+
+
+
+
+ 
+First we are iterating over existing list of elements
+Then few elements are added to the array and It is again iterated over
+Then few elements are removed from the array and then It is again iterated over
+
+Here is the Well compiled code to try this via java code
+
+-=========================================================
+
+
+public interface Iterator {
+    
+    public Object next();
+    public boolean hasNext();
+
+}
+
+=========================================================
+
+
+public interface Container {
+    
+    public Iterator getIterator();
+
+}
+=======================================================
+
+This class consist of an inner class MyIterator which basically becomes the part of collection class and 
+thus it becomes easy for MyIterator class to work on variables of enclosing class.  
+
+import java.lang.reflect.Array;
+
+public class Collection implements Container {
+
+    public 
+    String[] list = {"element1", "element2", "element3", "element4" };
+
+    public int index;
+
+    @Override
+    public Iterator getIterator() {
+        // TODO Auto-generated method stub
+        return new MyIterator();
+    }
+    
+    public void addElement(Object obj){
+        int arrLength=list.length;
+        arrLength++;
+        String[] newArr =new String[arrLength];
+        newArr[arrLength-1]=obj.toString();
+        System.arraycopy(list, 0, newArr, 0, list.length);
+        list=new String[newArr.length];
+        System.arraycopy(newArr, 0, list, 0, newArr.length);
+
+
+    }
+    
+    public void removeElement(Object obj){
+        int arrLength=list.length;
+        arrLength--;
+        String[] newArr =new String[arrLength];
+        System.arraycopy(list, 0, newArr, 0, list.length-1);
+        list=new String[newArr.length];
+        System.arraycopy(newArr, 0, list, 0, newArr.length);
+
+
+    }
+
+
+    private class MyIterator implements Iterator {
+
+        @Override
+        public Object next() {
+            // TODO Auto-generated method stub
+            if (hasNext()) {
+                return list[index++];
+            }
+            return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            // TODO Auto-generated method stub
+            if (list.length > index) {
+                return true;
+            }
+            return false;
+        }
+
+    }
+
+}
+============================================================
+
+Another good example of blogspot is 
+http://www.instanceofjava.com/2016/04/custom-iterator-in-java-example.html
+
+
+*******************************************************************
+Design furniture shop 
+https://www.careercup.com/question?id=5183557542608896
+
+
+
+
 
 
 
