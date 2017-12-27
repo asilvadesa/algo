@@ -5287,6 +5287,27 @@ Design furniture shop
 https://www.careercup.com/question?id=5183557542608896
 
 
+*****************************************************************************************************
+
+Why hashmap size is in power of 2 ?
+http://coding-geek.com/how-does-a-hashmap-work-in-java/ 
+
+
+n order to work efficiently, the size of the inner array needs to be a power of 2, let’s see why.
+
+Imagine the array size is 17, the mask value is going to be 16 (size -1). The binary representation of 16 is 0…010000, so for any hash value H the index generated with the bitwise formula “H AND 16” is going to be either 16 or 0. This means that the array of size 17 will only be used for 2 buckets: the one at index 0 and the one at index 16, not very efficient…
+
+But, if you now take a size that is a power of 2 like 16, the bitwise index formula is “H AND 15”. The binary representation of 15 is 0…001111 so the index formula can output values from 0 to 15 and the array of size 16 is fully used. For example:
+
+if H = 952 , its binary representation is 0..01110111000, the associated index is 0…01000 = 8
+if H = 1576 its binary representation is 0..011000101000, the associated index is  0…01000 = 8
+if H = 12356146, its binary representation is 0..0101111001000101000110010, the associated index is 0…00010 = 2
+if H = 59843, its binary representation is 0..01110100111000011, the associated index is 0…00011 = 3
+ 
+
+This is why the array size is a power of two. This mechanism is transparent for the developer: if he chooses a HashMap with a size of 37, the Map will automatically choose the next power of 2 after 37 (64) for the size of its inner array.
+
+ 
 
 
 
