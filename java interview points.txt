@@ -5309,6 +5309,17 @@ This is why the array size is a power of two. This mechanism is transparent for 
 
  
 
+*********************************************
+Finding easy way to calculate square root of any number
+https://discuss.leetcode.com/topic/44086/find-square-root-with-precision-factor/2
+
+public static double squareRoot(int N, float P) { 
+    double guess = N / 2;
+ 
+    while( Math.abs( guess*guess - N ) > P) {
+       guess  = ( guess + (  N / guess ) ) / 2;
+    }
+    return guess;
 
 
 
